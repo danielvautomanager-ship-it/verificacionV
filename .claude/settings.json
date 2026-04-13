@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "Review the code that was just written or edited. Check for opportunities to simplify: remove duplication, improve reuse, fix inefficiencies, and clean up unnecessary complexity. If you find issues, fix them. The file path is available in the tool input.",
+            "statusMessage": "Simplificando codigo...",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
