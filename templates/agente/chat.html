@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% block title %}Agente IA – ERP Mantenimiento{% endblock %}
+{% block page_title %}<i class="bi bi-robot me-2 text-warning"></i>Agente IA{% endblock %}
+
+{% block content %}
+<style>
+  #chat-wrapper {
+    display: flex; flex-direction: column;
+    height: calc(100vh - 130px);
+    max-width: 900px; margin: 0 auto;
+  }
+  #messages {
+    flex: 1; overflow-y: auto;
+    display: flex; flex-direction: column; gap: .8rem;
+    padding: 1rem 0;
+  }
+  .msg {
+    display: flex; gap: .7rem; align-items: flex-start;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
+  .msg-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .msg-user .msg-avatar  { background: #1a3c5e; color: #fff; }
+  .msg-agent .msg-avatar { background: #e8a020; color: #fff; }
+  .msg-bubble {
+    max-width: 85%;
+    padding: .65rem 1rem;
+    border-radius: 14px;
+    font-size: .88rem; line-height: 1.6;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .msg-user  .msg-bubble { background: #1a3c5e; color: #fff; border-bottom-right-radius: 4px; }
+  .msg-agent .msg-bubble { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; }
+  .msg-user  { flex-direction: row-reverse; }
+
+  .tool-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: #f0f4f8; border: 1px solid #cbd5e1;
+    border-radius: 20px; padding: .15rem .7rem;
+    font-size: .75rem; color: #475569; margin-bottom: .3rem;
+  }
+  .typing-dot {
+    display: inline-block; width: 7px; height: 7px;
+    background: #94a3b8; border-radius: 50%;
+    animation: blink 1.2s infinite; margin: 0 2px;
+  }
+  .typing-dot:nth-child(2) { animation-delay: .2s; }
+  .typing-dot:nth-child(3) { animation-delay: .4s; }
+  @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+  #input-area {
+    background: #fff; border: 1px solid #e2e8f0;
+    border-radius: 14px; padding: .5rem .5rem .5rem 1rem;
+    display: flex; align-items: flex-end; gap: .5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  #user-input {
+    flex: 1; border: none; outline: none; resize: none;
+    font-size: .9rem; line-height: 1.5; max-height: 140px;
+    font-family: inherit; background: transparent;
+  }
+  #send-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: #1a3c5e; color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background .2s;
+  }
+  #send-btn:hover { background: #2a5c8e; }
+  #send-btn:disabled { background: #94a3b8; cursor: default; }
+
+  .welcome-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 1.5rem; text-align: center; margin: auto 0;
+  }
+  .welcome-card .icon { font-size: 2.5rem; color: #e8a020; }
+  .suggestion-btn {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+    padding: .45rem .9rem; font-size: .82rem; color: #374151;
+    cursor: pointer; transition: all .15s; text-align: left;
+  }
+  .suggestion-btn:hover { background: #f0f4f8; border-color: #94a3b8; }
+</style>
+
+<div id="chat-wrapper">
+  <div id="messages">
+    <div class="welcome-card" id="welcome">
+      <div class="icon mb-2"><i class="bi bi-robot"></i></div>
+      <h5 class="fw-bold text-dark mb-1">Agente de Mantenimiento</h5>
+      <p class="text-muted mb-3" style="font-size:.85rem;">
+        Consulta órdenes, equipos, técnicos y KPIs en lenguaje natural.
+      </p>
+      <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <button class="suggestion-btn" onclick="sugerir(this)">¿Cuántas órdenes pendientes hay?</button>
+        <button class="suggestion-btn" onclick="sugerir(this)">Muéstrame los KPIs del sistema</button>
+        <button class="suggestion-btn" onclick="sugerir(this)">¿Qué equipos están en mantenimiento?</button>
+        <button class="suggestion-btn" onclick="sugerir(this)">¿Cuál es la disponibilidad de los equipos?</button>
+        <button class="suggestion-btn" onclick="sugerir(this)">Lista los técnicos disponibles</button>
+        <button class="suggestion-btn" onclick="sugerir(this)">Dame un resumen del estado del mantenimiento</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="input-area">
+    <textarea id="user-input" rows="1" placeholder="Escribe tu consulta..." maxlength="2000"></textarea>
+    <button id="send-btn" onclick="enviar()"><i class="bi bi-send-fill"></i></button>
+  </div>
+</div>
+
+<script>
+const messagesEl = document.getElementById('messages');
+const inputEl    = document.getElementById('user-input');
+const sendBtn    = document.getElementById('send-btn');
+let historial    = [];
+let streaming    = false;
+
+const TOOL_LABELS = {
+  listar_ordenes:      'Consultando órdenes...',
+  obtener_kpis:        'Calculando KPIs...',
+  listar_equipos:      'Leyendo equipos...',
+  listar_tecnicos:     'Consultando técnicos...',
+  obtener_disponibilidad:  'Calculando disponibilidad...',
+  obtener_kpis_por_mes:'Leyendo datos mensuales...',
+};
+
+function sugerir(btn) {
+  inputEl.value = btn.textContent;
+  inputEl.dispatchEvent(new Event('input'));
+  enviar();
+}
+
+function agregarMensaje(rol, texto) {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const icon = rol === 'user' ? 'person-fill' : 'robot';
+  const div  = document.createElement('div');
+  div.className = `msg msg-${rol === 'user' ? 'user' : 'agent'}`;
+  div.innerHTML = `
+    <div class="msg-avatar"><i class="bi bi-${icon}"></i></div>
+    <div class="msg-bubble">${escapeHtml(texto)}</div>`;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div.querySelector('.msg-bubble');
+}
+
+function agregarTyping() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = 'msg msg-agent';
+  div.id = 'typing-indicator';
+  div.innerHTML = `
+    <div class="msg-avatar"><i class="bi bi-robot"></i></div>
+    <div class="msg-bubble">
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+    </div>`;
+  messagesEl.appendChild(div);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return div;
+}
+
+function quitarTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setBubbleText(bubble, text) {
+  bubble.textContent = text;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+async function enviar() {
+  const texto = inputEl.value.trim();
+  if (!texto || streaming) return;
+
+  streaming = true;
+  sendBtn.disabled = true;
+  inputEl.value = '';
+  autoResize();
+
+  agregarMensaje('user', texto);
+  historial.push({ role: 'user', content: texto });
+
+  const typingEl = agregarTyping();
+  let bubble = null;
+  let accumulated = '';
+  let toolBadges = '';
+
+  try {
+    const resp = await fetch('/agente/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ historial }),
+    });
+
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = JSON.parse(line.slice(6));
+
+        if (payload.type === 'tool') {
+          toolBadges += `<span class="tool-badge"><i class="bi bi-gear-fill" style="font-size:.7rem"></i>${TOOL_LABELS[payload.name] || payload.name}</span> `;
+          if (bubble) {
+            bubble.innerHTML = toolBadges + '<br>' + escapeHtml(accumulated);
+          } else {
+            quitarTyping();
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg msg-agent';
+            msgDiv.innerHTML = `
+              <div class="msg-avatar"><i class="bi bi-robot"></i></div>
+              <div class="msg-bubble">${toolBadges}</div>`;
+            messagesEl.appendChild(msgDiv);
+            bubble = msgDiv.querySelector('.msg-bubble');
+          }
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        } else if (payload.type === 'text') {
+          if (!bubble) {
+            quitarTyping();
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg msg-agent';
+            msgDiv.innerHTML = `
+              <div class="msg-avatar"><i class="bi bi-robot"></i></div>
+              <div class="msg-bubble"></div>`;
+            messagesEl.appendChild(msgDiv);
+            bubble = msgDiv.querySelector('.msg-bubble');
+          }
+          accumulated += payload.content;
+          bubble.innerHTML = toolBadges + (toolBadges ? '<br>' : '') + escapeHtml(accumulated);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+
+        } else if (payload.type === 'done') {
+          quitarTyping();
+          if (accumulated) {
+            historial.push({ role: 'assistant', content: accumulated });
+          }
+        }
+      }
+    }
+  } catch (err) {
+    quitarTyping();
+    agregarMensaje('agent', 'Error al conectar con el agente. Verifica que la API key esté configurada.');
+    console.error(err);
+  } finally {
+    streaming = false;
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+}
+
+// Auto-resize textarea
+function autoResize() {
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
+}
+inputEl.addEventListener('input', autoResize);
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviar(); }
+});
+</script>
+{% endblock %}

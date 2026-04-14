@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, stream_with_context
 import database as db
+import agent
 
 app = Flask(__name__)
 app.secret_key = "erp-mantenimiento-2025"
@@ -151,6 +152,30 @@ def reportes():
                            kpi=kpi,
                            por_mes=por_mes,
                            disponibilidad=disponibilidad)
+
+# ── Agente IA ─────────────────────────────────────────────────────────────────
+
+@app.route("/agente")
+def agente():
+    return render_template("agente/chat.html")
+
+@app.route("/agente/chat", methods=["POST"])
+def agente_chat():
+    data = request.get_json()
+    historial = data.get("historial", [])
+
+    def generar():
+        yield from agent.stream_respuesta(historial)
+
+    return Response(
+        stream_with_context(generar()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

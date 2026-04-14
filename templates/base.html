@@ -124,6 +124,11 @@
     <a href="{{ url_for('reportes') }}" class="{{ 'active' if request.endpoint == 'reportes' }}">
       <i class="bi bi-bar-chart-line"></i> Indicadores KPI
     </a>
+
+    <div class="nav-section">Inteligencia</div>
+    <a href="{{ url_for('agente') }}" class="{{ 'active' if 'agente' in request.endpoint }}">
+      <i class="bi bi-robot"></i> Agente IA
+    </a>
   </nav>
 </div>
 
