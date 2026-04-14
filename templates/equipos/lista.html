@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Equipos{% endblock %}
+{% block page_title %}Registro de Equipos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+  <a href="{{ url_for('equipos_nuevo') }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>Nuevo Equipo
+  </a>
+</div>
+<div class="chart-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Código</th><th>Nombre</th><th>Área</th><th>Tipo</th>
+          <th>Criticidad</th><th>Estado</th><th>Alta</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for eq in equipos %}
+        <tr>
+          <td><strong>{{ eq.codigo }}</strong></td>
+          <td>{{ eq.nombre }}</td>
+          <td>{{ eq.area }}</td>
+          <td><span class="badge bg-light text-dark border">{{ eq.tipo }}</span></td>
+          <td>
+            {% set crit_cls = {'Critica':'danger','Alta':'warning','Media':'info','Baja':'secondary'} %}
+            <span class="badge bg-{{ crit_cls.get(eq.criticidad, 'secondary') }}">{{ eq.criticidad }}</span>
+          </td>
+          <td><span class="badge-estado estado-{{ eq.estado|replace(' ','-') }}">{{ eq.estado }}</span></td>
+          <td style="font-size:.8rem">{{ eq.fecha_alta }}</td>
+          <td>
+            <a href="{{ url_for('equipos_editar', equipo_id=eq.id) }}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted mt-2" style="font-size:.8rem">{{ equipos|length }} equipo(s)</p>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Órdenes de Servicio{% endblock %}
+{% block page_title %}Órdenes de Servicio{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="d-flex gap-2 flex-wrap">
+    <form method="get" class="d-flex gap-2 flex-wrap">
+      <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+        <option value="">Todos los estados</option>
+        {% for e in ['Pendiente','En Proceso','Cerrada','Cancelada'] %}
+          <option value="{{ e }}" {{ 'selected' if filtro_estado == e }}>{{ e }}</option>
+        {% endfor %}
+      </select>
+      <select name="tipo" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+        <option value="">Todos los tipos</option>
+        {% for t in ['Correctivo','Preventivo','Predictivo'] %}
+          <option value="{{ t }}" {{ 'selected' if filtro_tipo == t }}>{{ t }}</option>
+        {% endfor %}
+      </select>
+      <select name="equipo" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+        <option value="">Todos los equipos</option>
+        {% for eq in equipos %}
+          <option value="{{ eq.id }}" {{ 'selected' if filtro_equipo|string == eq.id|string }}>{{ eq.codigo }} – {{ eq.nombre }}</option>
+        {% endfor %}
+      </select>
+      {% if filtro_estado or filtro_tipo or filtro_equipo %}
+        <a href="{{ url_for('ordenes_lista') }}" class="btn btn-sm btn-outline-secondary">
+          <i class="bi bi-x-circle"></i> Limpiar
+        </a>
+      {% endif %}
+    </form>
+  </div>
+  <a href="{{ url_for('ordenes_nueva') }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>Nueva OS
+  </a>
+</div>
+
+<div class="chart-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>N° OS</th><th>Tipo</th><th>Prioridad</th><th>Equipo</th>
+          <th>Técnico</th><th>Descripción</th><th>Estado</th>
+          <th>Apertura</th><th>T. Parada</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for os in ordenes %}
+        <tr>
+          <td><strong>{{ os.numero }}</strong></td>
+          <td><span class="badge bg-light text-dark border">{{ os.tipo }}</span></td>
+          <td><span class="badge-estado prior-{{ os.prioridad }}">{{ os.prioridad }}</span></td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ os.equipo_nombre }}">{{ os.equipo_nombre }}</td>
+          <td>{{ os.tecnico_nombre or '—' }}</td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ os.descripcion }}">{{ os.descripcion }}</td>
+          <td><span class="badge-estado estado-{{ os.estado|replace(' ','-') }}">{{ os.estado }}</span></td>
+          <td style="font-size:.8rem;white-space:nowrap">{{ os.fecha_apertura }}</td>
+          <td>{{ os.tiempo_parada }}h</td>
+          <td>
+            <a href="{{ url_for('ordenes_detalle', os_id=os.id) }}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="text-center text-muted py-4">No hay órdenes que coincidan con los filtros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted mt-2" style="font-size:.8rem">{{ ordenes|length }} registro(s)</p>
+{% endblock %}

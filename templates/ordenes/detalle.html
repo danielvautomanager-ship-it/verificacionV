@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}{{ orden.numero }}{% endblock %}
+{% block page_title %}Detalle de Orden: {{ orden.numero }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{{ url_for('ordenes_lista') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+  <div class="d-flex gap-2">
+    <span class="badge-estado estado-{{ orden.estado|replace(' ','-') }} fs-6">{{ orden.estado }}</span>
+    <span class="badge-estado prior-{{ orden.prioridad }} fs-6">{{ orden.prioridad }}</span>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Info principal -->
+  <div class="col-lg-8">
+    <div class="chart-card mb-3">
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">N° Orden</div>
+          <strong>{{ orden.numero }}</strong>
+        </div>
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">Tipo</div>
+          <strong>{{ orden.tipo }}</strong>
+        </div>
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">Fecha Apertura</div>
+          <strong>{{ orden.fecha_apertura }}</strong>
+        </div>
+        <div class="col-md-6">
+          <div class="text-muted" style="font-size:.75rem">Equipo</div>
+          <strong>{{ orden.equipo_nombre }}</strong>
+        </div>
+        <div class="col-md-6">
+          <div class="text-muted" style="font-size:.75rem">Técnico</div>
+          <strong>{{ orden.tecnico_nombre or '—' }}</strong>
+        </div>
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">Inicio</div>
+          <strong>{{ orden.fecha_inicio or '—' }}</strong>
+        </div>
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">Cierre</div>
+          <strong>{{ orden.fecha_cierre or '—' }}</strong>
+        </div>
+        <div class="col-md-4">
+          <div class="text-muted" style="font-size:.75rem">Tiempo Parada</div>
+          <strong>{{ orden.tiempo_parada }}h</strong>
+        </div>
+      </div>
+      <hr>
+      <div class="mb-3">
+        <div class="text-muted mb-1" style="font-size:.75rem">DESCRIPCIÓN</div>
+        <p class="mb-0">{{ orden.descripcion }}</p>
+      </div>
+      {% if orden.diagnostico %}
+      <div class="mb-3">
+        <div class="text-muted mb-1" style="font-size:.75rem">DIAGNÓSTICO</div>
+        <p class="mb-0">{{ orden.diagnostico }}</p>
+      </div>
+      {% endif %}
+      {% if orden.accion_tomada %}
+      <div class="mb-3">
+        <div class="text-muted mb-1" style="font-size:.75rem">ACCIÓN TOMADA</div>
+        <p class="mb-0">{{ orden.accion_tomada }}</p>
+      </div>
+      {% endif %}
+      {% if orden.observaciones %}
+      <div>
+        <div class="text-muted mb-1" style="font-size:.75rem">OBSERVACIONES</div>
+        <p class="mb-0">{{ orden.observaciones }}</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Costos -->
+    {% if orden.costo > 0 %}
+    <div class="chart-card mb-3">
+      <h6 class="text-muted mb-2"><i class="bi bi-cash me-1"></i>Costo</h6>
+      <span class="fs-4 fw-bold text-success">S/ {{ "%.2f"|format(orden.costo) }}</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Formulario actualización -->
+  <div class="col-lg-4">
+    <div class="chart-card">
+      <h6 class="mb-3 text-primary"><i class="bi bi-pencil-square me-1"></i>Actualizar OS</h6>
+      <form method="post" action="{{ url_for('ordenes_editar', os_id=orden.id) }}">
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Estado</label>
+          <select name="estado" class="form-select form-select-sm">
+            {% for e in ['Pendiente','En Proceso','Cerrada','Cancelada'] %}
+              <option value="{{ e }}" {{ 'selected' if orden.estado == e }}>{{ e }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Prioridad</label>
+          <select name="prioridad" class="form-select form-select-sm">
+            {% for p in ['Baja','Media','Alta','Critica'] %}
+              <option value="{{ p }}" {{ 'selected' if orden.prioridad == p }}>{{ p }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Técnico</label>
+          <select name="tecnico_id" class="form-select form-select-sm">
+            <option value="">Sin asignar</option>
+            {% for tec in tecnicos %}
+              <option value="{{ tec.id }}" {{ 'selected' if orden.tecnico_id == tec.id }}>{{ tec.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Diagnóstico</label>
+          <textarea name="diagnostico" class="form-control form-control-sm" rows="2">{{ orden.diagnostico or '' }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Acción Tomada</label>
+          <textarea name="accion_tomada" class="form-control form-control-sm" rows="2">{{ orden.accion_tomada or '' }}</textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Tiempo de Parada (horas)</label>
+          <input type="number" name="tiempo_parada" step="0.5" min="0"
+                 class="form-control form-control-sm" value="{{ orden.tiempo_parada }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Costo (S/)</label>
+          <input type="number" name="costo" step="0.01" min="0"
+                 class="form-control form-control-sm" value="{{ orden.costo }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="font-size:.82rem">Comentario de cambio</label>
+          <input type="text" name="comentario_estado" class="form-control form-control-sm"
+                 placeholder="Motivo del cambio...">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-save me-1"></i>Guardar cambios
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

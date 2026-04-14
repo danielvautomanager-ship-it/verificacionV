@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Técnicos{% endblock %}
+{% block page_title %}Registro de Técnicos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3">
+  <a href="{{ url_for('tecnicos_nuevo') }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-person-plus me-1"></i>Nuevo Técnico
+  </a>
+</div>
+<div class="chart-card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Código</th><th>Nombre</th><th>Especialidad</th>
+          <th>Turno</th><th>Activo</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tec in tecnicos %}
+        <tr>
+          <td><strong>{{ tec.codigo }}</strong></td>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div style="width:34px;height:34px;border-radius:50%;background:#e0e7ef;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1a3c5e;font-size:.85rem">
+                {{ tec.nombre[0] }}
+              </div>
+              {{ tec.nombre }}
+            </div>
+          </td>
+          <td><span class="badge bg-info text-dark">{{ tec.especialidad }}</span></td>
+          <td>{{ tec.turno }}</td>
+          <td>
+            {% if tec.activo %}
+              <span class="badge bg-success">Activo</span>
+            {% else %}
+              <span class="badge bg-secondary">Inactivo</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('tecnicos_editar', tec_id=tec.id) }}" class="btn btn-sm btn-outline-secondary">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted mt-2" style="font-size:.8rem">{{ tecnicos|length }} técnico(s)</p>
+{% endblock %}

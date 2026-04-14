@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ERP Mantenimiento{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-w: 240px;
+      --primary:   #1a3c5e;
+      --accent:    #e8a020;
+    }
+    body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w); background: var(--primary);
+      display: flex; flex-direction: column; z-index: 100;
+    }
+    #sidebar .brand {
+      padding: 1.2rem 1rem; background: #0f2540;
+      border-bottom: 3px solid var(--accent);
+    }
+    #sidebar .brand h6 { color: var(--accent); margin: 0; font-size: .7rem; letter-spacing: 2px; }
+    #sidebar .brand h5 { color: #fff; margin: 0; font-weight: 700; }
+    #sidebar nav a {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .7rem 1.2rem; color: #b8cfe0; text-decoration: none;
+      font-size: .88rem; border-left: 3px solid transparent;
+      transition: all .2s;
+    }
+    #sidebar nav a:hover,
+    #sidebar nav a.active {
+      color: #fff; background: rgba(255,255,255,.08);
+      border-left-color: var(--accent);
+    }
+    #sidebar nav .nav-section {
+      padding: .5rem 1.2rem .2rem;
+      font-size: .68rem; letter-spacing: 1.5px;
+      color: #5a7fa0; text-transform: uppercase; margin-top: .5rem;
+    }
+
+    /* Main */
+    #main { margin-left: var(--sidebar-w); min-height: 100vh; }
+    .topbar {
+      background: #fff; padding: .8rem 1.5rem;
+      border-bottom: 1px solid #dde3ea;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h4 { margin: 0; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+    .content { padding: 1.5rem; }
+
+    /* KPI Cards */
+    .kpi-card {
+      background: #fff; border-radius: 10px;
+      padding: 1.2rem 1.4rem; border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .kpi-card .kpi-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+    .kpi-card .kpi-val { font-size: 1.8rem; font-weight: 700; line-height: 1; }
+    .kpi-card .kpi-label { font-size: .78rem; color: #6b7280; margin-top: .2rem; }
+
+    /* Badges */
+    .badge-estado { font-size: .73rem; padding: .3em .7em; border-radius: 20px; font-weight: 600; }
+    .estado-Pendiente   { background: #fff3cd; color: #856404; }
+    .estado-En-Proceso  { background: #cfe2ff; color: #084298; }
+    .estado-Cerrada     { background: #d1e7dd; color: #0a3622; }
+    .estado-Cancelada   { background: #f8d7da; color: #58151c; }
+    .estado-Operativo   { background: #d1e7dd; color: #0a3622; }
+    .estado-En-Mantenimiento { background: #fff3cd; color: #856404; }
+    .estado-Fuera-de-Servicio { background: #f8d7da; color: #58151c; }
+
+    .prior-Critica { background: #f8d7da; color: #58151c; }
+    .prior-Alta    { background: #ffe5b4; color: #7a3e00; }
+    .prior-Media   { background: #cfe2ff; color: #084298; }
+    .prior-Baja    { background: #e2e8f0; color: #374151; }
+
+    /* Table */
+    .table-hover tbody tr:hover { background: #f8fafc; }
+    .table th { font-size: .78rem; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; }
+
+    /* Charts */
+    .chart-card { background: #fff; border-radius: 10px; padding: 1.2rem; border: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="brand">
+    <h6>SISTEMA ERP</h6>
+    <h5><i class="bi bi-gear-fill text-warning me-1"></i> Mantenimiento</h5>
+  </div>
+  <nav class="mt-2">
+    <div class="nav-section">Principal</div>
+    <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">
+      <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <div class="nav-section">Operaciones</div>
+    <a href="{{ url_for('ordenes_lista') }}" class="{{ 'active' if 'ordenes' in request.endpoint }}">
+      <i class="bi bi-clipboard-check"></i> Órdenes de Servicio
+    </a>
+    <a href="{{ url_for('ordenes_nueva') }}" class="{{ 'active' if request.endpoint == 'ordenes_nueva' }}" style="padding-left:2.2rem; font-size:.82rem;">
+      <i class="bi bi-plus-circle"></i> Nueva OS
+    </a>
+
+    <div class="nav-section">Maestros</div>
+    <a href="{{ url_for('equipos_lista') }}" class="{{ 'active' if 'equipos' in request.endpoint }}">
+      <i class="bi bi-cpu"></i> Equipos
+    </a>
+    <a href="{{ url_for('tecnicos_lista') }}" class="{{ 'active' if 'tecnicos' in request.endpoint }}">
+      <i class="bi bi-person-gear"></i> Técnicos
+    </a>
+
+    <div class="nav-section">Reportes</div>
+    <a href="{{ url_for('reportes') }}" class="{{ 'active' if request.endpoint == 'reportes' }}">
+      <i class="bi bi-bar-chart-line"></i> Indicadores KPI
+    </a>
+  </nav>
+</div>
+
+<div id="main">
+  <div class="topbar">
+    <h4>{% block page_title %}ERP Mantenimiento{% endblock %}</h4>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-success"><i class="bi bi-circle-fill me-1" style="font-size:.5rem"></i>En línea</span>
+      <span class="text-muted" style="font-size:.82rem;" id="reloj"></span>
+    </div>
+  </div>
+
+  <div class="content">
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in msgs %}
+        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  // Reloj
+  function tick() {
+    const now = new Date();
+    document.getElementById('reloj').textContent =
+      now.toLocaleDateString('es-PE') + ' ' + now.toLocaleTimeString('es-PE');
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
