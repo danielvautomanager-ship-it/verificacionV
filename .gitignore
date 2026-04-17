@@ -3,3 +3,6 @@ __pycache__/
 *.db
 *.sqlite3
 .env
+chroma_db/
+static/uploads/fotos/
+static/uploads/pdfs/

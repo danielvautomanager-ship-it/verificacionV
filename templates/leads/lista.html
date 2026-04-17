@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Leads — CRM{% endblock %}
+{% block page_title %}Leads y Contactos{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-4 flex-wrap">
+  {% for e in ['', 'Nuevo', 'Contactado', 'Calificado', 'Cerrado'] %}
+  <a href="{{ url_for('inmuebles.leads_lista') }}{{ '?estado=' + e if e }}"
+     class="btn btn-sm {{ 'btn-primary' if filtro_estado==e else 'btn-outline-secondary' }}">
+    {{ e or 'Todos' }}
+    {% if not e %}
+    <span class="badge bg-white text-primary ms-1">{{ leads|length }}</span>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+
+{% if leads %}
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Contacto</th>
+          <th>Propiedad de interés</th>
+          <th>Mensaje</th>
+          <th>Origen</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in leads %}
+        <tr id="lead_{{ l.id }}">
+          <td>
+            <div class="fw-semibold small">{{ l.nombre or '—' }}</div>
+            {% if l.telefono %}
+            <div class="text-muted small"><i class="bi bi-telephone"></i> {{ l.telefono }}</div>
+            {% endif %}
+            {% if l.email %}
+            <div class="text-muted small"><i class="bi bi-envelope"></i> {{ l.email }}</div>
+            {% endif %}
+          </td>
+          <td>
+            {% if l.propiedad_titulo %}
+            <a href="{{ url_for('inmuebles.inmuebles_detalle', pid=l.propiedad_id) }}"
+               class="text-decoration-none small">{{ l.propiedad_titulo }}</a>
+            {% else %}
+            <span class="text-muted small">General</span>
+            {% endif %}
+          </td>
+          <td>
+            <small class="text-muted">
+              {{ (l.mensaje or '')[:80] }}{% if l.mensaje and l.mensaje|length > 80 %}…{% endif %}
+            </small>
+          </td>
+          <td><span class="badge bg-light text-dark">{{ l.origen }}</span></td>
+          <td>
+            <select class="form-select form-select-sm" style="min-width:100px;"
+                    onchange="actualizarEstado({{ l.id }}, this.value)">
+              {% for e in ['Nuevo','Contactado','Calificado','Cerrado'] %}
+              <option value="{{ e }}" {{ 'selected' if l.estado==e }}>{{ e }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td><small class="text-muted">{{ l.fecha_contacto[:16] }}</small></td>
+          <td>
+            {% if l.notas %}
+            <span title="{{ l.notas }}" class="text-muted"><i class="bi bi-sticky"></i></span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <i class="bi bi-person-lines-fill" style="font-size:3.5rem;"></i>
+  <p class="mt-3">No hay leads registrados aún.</p>
+  <a href="{{ url_for('chatbot.chatbot_ui') }}" class="btn btn-primary">
+    <i class="bi bi-chat-dots"></i> Abrir Chatbot
+  </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function actualizarEstado(leadId, estado) {
+  fetch(`/leads/${leadId}/estado`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `estado=${encodeURIComponent(estado)}`
+  });
+}
+</script>
+{% endblock %}

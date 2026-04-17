@@ -1,10 +1,20 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import database as db
+import realestate_db as rdb
+from blueprints.inmuebles import inmuebles_bp
+from blueprints.chatbot import chatbot_bp
 
 app = Flask(__name__)
 app.secret_key = "erp-mantenimiento-2025"
+app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
+app.config["MAX_CONTENT_LENGTH"] = 32 * 1024 * 1024
 
 db.init_db()
+rdb.init_realestate_db()
+
+app.register_blueprint(inmuebles_bp)
+app.register_blueprint(chatbot_bp)
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 

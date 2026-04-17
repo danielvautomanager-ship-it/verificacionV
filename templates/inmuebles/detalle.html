@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}{{ prop.titulo }}{% endblock %}
+{% block page_title %}{{ prop.titulo }}{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-3">
+  <a href="{{ url_for('inmuebles.inmuebles_lista') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+  <a href="{{ url_for('inmuebles.inmuebles_editar', pid=prop.id) }}" class="btn btn-primary btn-sm">
+    <i class="bi bi-pencil"></i> Editar
+  </a>
+  <a href="{{ url_for('inmuebles.inmuebles_publicar', pid=prop.id) }}" class="btn btn-info btn-sm text-white">
+    <i class="bi bi-facebook"></i> Publicar en Facebook
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Columna principal -->
+  <div class="col-lg-8">
+    <!-- Carrusel de fotos -->
+    {% if fotos %}
+    <div id="carouselFotos" class="carousel slide mb-4" data-bs-ride="carousel">
+      <div class="carousel-inner rounded-3 overflow-hidden" style="height:380px;">
+        {% for f in fotos %}
+        <div class="carousel-item {{ 'active' if loop.first }}">
+          <img src="{{ url_for('static', filename='uploads/fotos/' + f.nombre_archivo) }}"
+               class="d-block w-100 h-100" style="object-fit:cover;">
+        </div>
+        {% endfor %}
+      </div>
+      {% if fotos|length > 1 %}
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselFotos" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselFotos" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+      {% endif %}
+    </div>
+    <!-- Thumbnails -->
+    <div class="d-flex gap-2 flex-wrap mb-4">
+      {% for f in fotos %}
+      <div class="position-relative">
+        <img src="{{ url_for('static', filename='uploads/fotos/' + f.nombre_archivo) }}"
+             style="width:70px;height:56px;object-fit:cover;border-radius:6px;cursor:pointer;
+                    border:{{ '2px solid var(--accent)' if f.es_portada else '2px solid transparent' }}">
+        {% if not f.es_portada %}
+        <form method="post" action="{{ url_for('inmuebles.inmuebles_set_portada', pid=prop.id, aid=f.id) }}" class="d-inline">
+          <button type="submit" class="btn btn-xs btn-warning position-absolute bottom-0 end-0"
+                  style="font-size:.55rem;padding:1px 4px;" title="Hacer portada">★</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('inmuebles.inmuebles_eliminar_archivo', pid=prop.id, aid=f.id) }}" class="d-inline"
+              onsubmit="return confirm('¿Eliminar foto?')">
+          <button type="submit" class="btn btn-xs btn-danger position-absolute top-0 end-0"
+                  style="font-size:.55rem;padding:1px 4px;">✕</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-light rounded-3 d-flex align-items-center justify-content-center mb-4"
+         style="height:200px; color:#94a3b8;">
+      <div class="text-center"><i class="bi bi-image" style="font-size:3rem;"></i><br>Sin fotos</div>
+    </div>
+    {% endif %}
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="detTabs">
+      <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabInfo">Información</a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabArchivos">
+        Archivos <span class="badge bg-secondary">{{ fotos|length + pdfs|length }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabPublicaciones">
+        Publicaciones <span class="badge bg-secondary">{{ publicaciones|length }}</span></a></li>
+      <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabLeads">
+        Leads <span class="badge bg-danger">{{ leads|length }}</span></a></li>
+    </ul>
+    <div class="tab-content">
+      <!-- Info -->
+      <div class="tab-pane fade show active" id="tabInfo">
+        <div class="card border-0 shadow-sm p-3">
+          <p class="text-muted">{{ prop.descripcion or 'Sin descripción.' }}</p>
+          {% if caract %}
+          <div class="d-flex flex-wrap gap-2 mt-2">
+            {% for c in caract %}<span class="badge bg-light text-dark border"><i class="bi bi-check2"></i> {{ c }}</span>{% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Archivos -->
+      <div class="tab-pane fade" id="tabArchivos">
+        <div class="card border-0 shadow-sm p-3">
+          <!-- Upload -->
+          <form method="post" action="{{ url_for('inmuebles.inmuebles_subir_archivo', pid=prop.id) }}"
+                enctype="multipart/form-data" class="mb-3">
+            <div class="row g-2">
+              <div class="col-md-5">
+                <input type="file" name="fotos" class="form-control form-control-sm" multiple accept="image/*">
+              </div>
+              <div class="col-md-5">
+                <input type="file" name="pdfs" class="form-control form-control-sm" multiple accept=".pdf">
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-primary btn-sm w-100"><i class="bi bi-upload"></i> Subir</button>
+              </div>
+            </div>
+          </form>
+          {% if pdfs %}
+          <h6 class="small fw-semibold text-muted mb-2">PDFs</h6>
+          {% for f in pdfs %}
+          <div class="d-flex align-items-center justify-content-between p-2 bg-light rounded mb-1">
+            <div><i class="bi bi-file-earmark-pdf text-danger"></i>
+              <a href="{{ url_for('static', filename='uploads/pdfs/' + f.nombre_archivo) }}"
+                 target="_blank" class="ms-1 small">{{ f.nombre_original or f.nombre_archivo }}</a>
+            </div>
+            <form method="post" action="{{ url_for('inmuebles.inmuebles_eliminar_archivo', pid=prop.id, aid=f.id) }}"
+                  onsubmit="return confirm('¿Eliminar?')">
+              <button class="btn btn-sm btn-outline-danger py-0"><i class="bi bi-trash"></i></button>
+            </form>
+          </div>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Publicaciones -->
+      <div class="tab-pane fade" id="tabPublicaciones">
+        <div class="card border-0 shadow-sm p-3">
+          <a href="{{ url_for('inmuebles.inmuebles_publicar', pid=prop.id) }}"
+             class="btn btn-info btn-sm text-white mb-3">
+            <i class="bi bi-facebook"></i> Generar nueva publicación
+          </a>
+          {% for pub in publicaciones %}
+          <div class="border rounded p-3 mb-2 small">
+            <div class="d-flex justify-content-between mb-1">
+              <span class="badge {{ 'bg-success' if pub.estado=='Publicado' else 'bg-secondary' }}">
+                {{ pub.estado }}
+              </span>
+              <span class="text-muted">{{ pub.plataforma.replace('_',' ').title() }}</span>
+            </div>
+            <p class="mb-1 text-truncate">{{ pub.contenido_texto[:120] }}…</p>
+            <small class="text-muted">{{ pub.fecha_generacion }}</small>
+          </div>
+          {% else %}
+          <p class="text-muted small">Sin publicaciones generadas.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Leads -->
+      <div class="tab-pane fade" id="tabLeads">
+        <div class="card border-0 shadow-sm p-3">
+          {% for l in leads %}
+          <div class="border rounded p-2 mb-2 small">
+            <strong>{{ l.nombre or 'Sin nombre' }}</strong>
+            {% if l.telefono %} — <i class="bi bi-telephone"></i> {{ l.telefono }}{% endif %}
+            {% if l.email %} — <i class="bi bi-envelope"></i> {{ l.email }}{% endif %}
+            <p class="mb-0 text-muted">{{ l.mensaje }}</p>
+            <small class="text-muted">{{ l.fecha_contacto }}</small>
+          </div>
+          {% else %}
+          <p class="text-muted small">Sin leads para esta propiedad.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel lateral -->
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge badge-estado
+            {{ 'bg-success text-white' if prop.estado=='Disponible'
+               else 'bg-warning text-dark' if prop.estado=='Reservado'
+               else 'bg-danger text-white' }}
+            fs-6">{{ prop.estado }}</span>
+          <small class="text-muted">{{ prop.codigo }}</small>
+        </div>
+        {% if prop.precio %}
+        <div class="h4 fw-bold text-primary mb-3">
+          {{ prop.moneda }} {{ "{:,.0f}".format(prop.precio) }}
+        </div>
+        {% endif %}
+        <table class="table table-sm small mb-0">
+          <tr><td class="text-muted">Tipo</td><td class="fw-semibold">{{ prop.tipo }}</td></tr>
+          <tr><td class="text-muted">Operación</td><td>{{ prop.operacion }}</td></tr>
+          {% if prop.dormitorios %}<tr><td class="text-muted">Dormitorios</td><td>{{ prop.dormitorios }}</td></tr>{% endif %}
+          {% if prop.banos %}<tr><td class="text-muted">Baños</td><td>{{ prop.banos }}</td></tr>{% endif %}
+          {% if prop.area_m2 %}<tr><td class="text-muted">Área</td><td>{{ prop.area_m2 }} m²</td></tr>{% endif %}
+          {% if prop.area_terreno_m2 %}<tr><td class="text-muted">Terreno</td><td>{{ prop.area_terreno_m2 }} m²</td></tr>{% endif %}
+          <tr><td class="text-muted">Distrito</td><td>{{ prop.distrito }}</td></tr>
+          <tr><td class="text-muted">Provincia</td><td>{{ prop.provincia }}</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Cambiar estado -->
+    <div class="card border-0 shadow-sm mb-3">
+      <div class="card-body">
+        <h6 class="small fw-semibold mb-2">Cambiar Estado</h6>
+        <form method="post" action="{{ url_for('inmuebles.inmuebles_cambiar_estado', pid=prop.id) }}"
+              class="d-flex gap-2">
+          <select name="estado" class="form-select form-select-sm flex-fill">
+            {% for e in ["Disponible","Reservado","Vendido","Alquilado"] %}
+            <option value="{{ e }}" {{ 'selected' if prop.estado==e }}>{{ e }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-sm btn-primary">OK</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Chatbot RAG -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="small fw-semibold mb-2">
+          <i class="bi bi-robot text-primary"></i> Chatbot IA
+        </h6>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span id="ragEstadoBadge" class="badge
+            {{ 'bg-success' if rag_estado=='indexado'
+               else 'bg-warning text-dark' if rag_estado=='indexando'
+               else 'bg-danger' if rag_estado=='error'
+               else 'bg-secondary' }}">
+            {{ rag_estado }}
+          </span>
+          <small class="text-muted">Estado de indexado</small>
+        </div>
+        <button id="btnIndexar" class="btn btn-outline-primary btn-sm w-100"
+                onclick="indexarPropiedad()">
+          <i class="bi bi-database-add"></i>
+          {{ 'Re-indexar' if rag_estado=='indexado' else 'Indexar para Chatbot' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function indexarPropiedad() {
+  const btn = document.getElementById('btnIndexar');
+  const badge = document.getElementById('ragEstadoBadge');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Indexando…';
+  badge.className = 'badge bg-warning text-dark';
+  badge.textContent = 'indexando';
+
+  fetch('{{ url_for("inmuebles.inmuebles_indexar", pid=prop.id) }}', {method:'POST'})
+    .then(r => r.json())
+    .then(() => {
+      // Poll until done
+      const poll = setInterval(() => {
+        fetch('{{ url_for("inmuebles.inmuebles_rag_estado", pid=prop.id) }}')
+          .then(r => r.json())
+          .then(data => {
+            if (data.estado === 'indexado') {
+              clearInterval(poll);
+              badge.className = 'badge bg-success';
+              badge.textContent = 'indexado';
+              btn.disabled = false;
+              btn.innerHTML = '<i class="bi bi-database-add"></i> Re-indexar';
+            } else if (data.estado === 'error') {
+              clearInterval(poll);
+              badge.className = 'badge bg-danger';
+              badge.textContent = 'error';
+              btn.disabled = false;
+              btn.innerHTML = '<i class="bi bi-database-add"></i> Reintentar';
+            }
+          });
+      }, 3000);
+    });
+}
+</script>
+{% endblock %}
