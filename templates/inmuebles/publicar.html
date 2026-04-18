@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Publicar en Facebook — {{ prop.titulo }}{% endblock %}
+{% block page_title %}Generar Publicación Facebook{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-3">
+  <a href="{{ url_for('inmuebles.inmuebles_detalle', pid=prop.id) }}"
+     class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left"></i> Volver a la propiedad
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white fw-semibold border-0 pt-3">
+        <i class="bi bi-facebook text-primary"></i> Generar con IA
+        <small class="text-muted fw-normal ms-2">{{ prop.codigo }} — {{ prop.titulo }}</small>
+      </div>
+      <div class="card-body">
+        <!-- Selector de plataforma -->
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Plataforma</label>
+          <div class="d-flex gap-3 flex-wrap">
+            {% for val, label in [
+              ('facebook_marketplace', 'Marketplace'),
+              ('facebook_perfil', 'Perfil Personal'),
+              ('facebook_pagina', 'Página de Facebook')
+            ] %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="plataforma_radio"
+                     id="plat_{{ loop.index }}" value="{{ val }}"
+                     {{ 'checked' if loop.first }}>
+              <label class="form-check-label" for="plat_{{ loop.index }}">
+                <i class="bi bi-facebook"></i> {{ label }}
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Botón generar -->
+        <button id="btnGenerar" onclick="generarConIA()" class="btn btn-primary mb-4">
+          <i class="bi bi-stars"></i> Generar con IA
+        </button>
+
+        <!-- Spinner -->
+        <div id="spinnerGenerando" class="d-none text-center py-3">
+          <div class="spinner-border text-primary me-2"></div>
+          <span class="text-muted">Generando con Ollama… puede tardar 20-40 segundos.</span>
+        </div>
+
+        <!-- Error -->
+        <div id="errorMsg" class="alert alert-danger d-none"></div>
+
+        <!-- Formulario resultado -->
+        <form id="formGuardar" method="post" class="d-none">
+          <input type="hidden" name="plataforma" id="platInput">
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Título del Post</label>
+            <input type="text" name="titulo_post" id="tituloPost" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Cuerpo del Post</label>
+            <div class="position-relative">
+              <textarea name="contenido_texto" id="cuerpoPost" class="form-control"
+                        rows="10"></textarea>
+              <button type="button" onclick="copiarTexto('cuerpoPost')"
+                      class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-1">
+                <i class="bi bi-clipboard"></i> Copiar
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Hashtags</label>
+            <div class="position-relative">
+              <textarea name="hashtags" id="hashtagsPost" class="form-control" rows="2"></textarea>
+              <button type="button" onclick="copiarTexto('hashtagsPost')"
+                      class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-1">
+                <i class="bi bi-clipboard"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label small fw-semibold">Llamada a la Acción</label>
+            <input type="text" name="llamada_accion" id="llamadaPost" class="form-control">
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-floppy"></i> Guardar Borrador
+            </button>
+            <button type="button" onclick="copiarTodo()" class="btn btn-outline-primary">
+              <i class="bi bi-clipboard-check"></i> Copiar Todo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Historial de publicaciones anteriores -->
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold border-0 pt-3">
+        <i class="bi bi-clock-history text-muted"></i> Publicaciones anteriores
+      </div>
+      <div class="card-body p-2">
+        {% if publicaciones_prev %}
+        {% for pub in publicaciones_prev %}
+        <div class="border rounded p-2 mb-2 small">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge {{ 'bg-success' if pub.estado=='Publicado' else 'bg-secondary' }}">
+              {{ pub.estado }}
+            </span>
+            <small class="text-muted">{{ pub.plataforma.replace('_',' ').title() }}</small>
+          </div>
+          {% if pub.titulo_post %}
+          <p class="fw-semibold mb-1 text-truncate">{{ pub.titulo_post }}</p>
+          {% endif %}
+          <p class="text-muted mb-1" style="max-height:60px;overflow:hidden;">
+            {{ pub.contenido_texto[:150] }}…
+          </p>
+          <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">{{ pub.fecha_generacion[:16] }}</small>
+            {% if pub.estado == 'Borrador' %}
+            <form method="post" action="{{ url_for('inmuebles.publicaciones_marcar_publicado', pub_id=pub.id) }}" class="d-inline">
+              <button class="btn btn-xs btn-outline-success" style="font-size:.7rem;padding:2px 6px;">
+                ✓ Marcar publicado
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="text-muted small p-2">Sin publicaciones previas para esta propiedad.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function generarConIA() {
+  const plataforma = document.querySelector('input[name="plataforma_radio"]:checked').value;
+  document.getElementById('btnGenerar').classList.add('d-none');
+  document.getElementById('spinnerGenerando').classList.remove('d-none');
+  document.getElementById('errorMsg').classList.add('d-none');
+  document.getElementById('formGuardar').classList.add('d-none');
+
+  const formData = new FormData();
+  formData.append('action', 'generar');
+  formData.append('plataforma', plataforma);
+
+  fetch('{{ url_for("inmuebles.inmuebles_publicar", pid=prop.id) }}', {
+    method: 'POST',
+    body: formData
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('spinnerGenerando').classList.add('d-none');
+    document.getElementById('btnGenerar').classList.remove('d-none');
+    if (data.ok && data.resultado) {
+      const r = data.resultado;
+      document.getElementById('platInput').value = plataforma;
+      document.getElementById('tituloPost').value = r.titulo || '';
+      document.getElementById('cuerpoPost').value = r.cuerpo || '';
+      document.getElementById('hashtagsPost').value = r.hashtags || '';
+      document.getElementById('llamadaPost').value = r.llamada_accion || '';
+      document.getElementById('formGuardar').classList.remove('d-none');
+    } else {
+      const errEl = document.getElementById('errorMsg');
+      errEl.textContent = data.error || 'Error al generar. Verifique que Ollama esté corriendo.';
+      errEl.classList.remove('d-none');
+    }
+  })
+  .catch(err => {
+    document.getElementById('spinnerGenerando').classList.add('d-none');
+    document.getElementById('btnGenerar').classList.remove('d-none');
+    const errEl = document.getElementById('errorMsg');
+    errEl.textContent = 'Error de conexión: ' + err.message;
+    errEl.classList.remove('d-none');
+  });
+}
+
+function copiarTexto(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.value).then(() => {
+    const btn = el.parentElement.querySelector('button');
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check2"></i> Copiado';
+    setTimeout(() => btn.innerHTML = original, 2000);
+  });
+}
+
+function copiarTodo() {
+  const titulo = document.getElementById('tituloPost').value;
+  const cuerpo = document.getElementById('cuerpoPost').value;
+  const hashtags = document.getElementById('hashtagsPost').value;
+  const cta = document.getElementById('llamadaPost').value;
+  const texto = [titulo, cuerpo, cta, hashtags].filter(Boolean).join('\n\n');
+  navigator.clipboard.writeText(texto).then(() => alert('¡Texto completo copiado al portapapeles!'));
+}
+</script>
+{% endblock %}

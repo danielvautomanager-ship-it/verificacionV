@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block title %}Chatbot Inmobiliario IA{% endblock %}
+{% block page_title %}Chatbot IA — Asesor Virtual{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm" style="height:70vh; display:flex; flex-direction:column;">
+
+      <!-- Header -->
+      <div class="card-header bg-primary text-white d-flex align-items-center gap-2">
+        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center"
+             style="width:36px;height:36px;">
+          <i class="bi bi-robot text-primary"></i>
+        </div>
+        <div>
+          <div class="fw-semibold">Asesor Virtual</div>
+          <small class="opacity-75">Respondo sobre nuestras propiedades disponibles</small>
+        </div>
+        <span class="badge bg-success ms-auto">En línea</span>
+      </div>
+
+      <!-- Mensajes -->
+      <div id="chatMessages" class="flex-fill overflow-auto p-3" style="background:#f8fafc;">
+        <!-- Mensaje bienvenida -->
+        <div class="d-flex gap-2 mb-3">
+          <div class="bg-white border rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+               style="width:32px;height:32px;">
+            <i class="bi bi-robot text-primary" style="font-size:.85rem;"></i>
+          </div>
+          <div class="bg-white rounded-3 shadow-sm p-3" style="max-width:80%; font-size:.9rem;">
+            ¡Hola! Soy el asesor virtual de nuestra inmobiliaria. Puedo ayudarle a encontrar
+            propiedades según sus necesidades. ¿Qué tipo de propiedad está buscando?
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="card-footer bg-white border-0 p-3">
+        <div class="d-flex gap-2">
+          <input type="text" id="chatInput" class="form-control"
+                 placeholder="Ej: ¿Tienen casas en Lima con 3 dormitorios?"
+                 onkeydown="if(event.key==='Enter') enviarMensaje()">
+          <button onclick="enviarMensaje()" id="sendBtn" class="btn btn-primary px-3">
+            <i class="bi bi-send"></i>
+          </button>
+        </div>
+        <div class="text-center mt-2">
+          <button onclick="abrirModalLead()" class="btn btn-link btn-sm text-muted p-0">
+            <i class="bi bi-person-plus"></i> Dejar mis datos de contacto
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-2 text-muted" style="font-size:.75rem;">
+      <i class="bi bi-info-circle"></i>
+      Este chatbot usa IA local. Las respuestas se basan en el catálogo de propiedades indexado.
+    </div>
+  </div>
+</div>
+
+<!-- Modal lead -->
+<div class="modal fade" id="modalLead" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h6 class="modal-title fw-semibold">
+          <i class="bi bi-person-plus text-primary"></i> Sus datos de contacto
+        </h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Nombre</label>
+          <input type="text" id="leadNombre" class="form-control form-control-sm"
+                 placeholder="Su nombre completo">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Teléfono / WhatsApp</label>
+          <input type="tel" id="leadTelefono" class="form-control form-control-sm"
+                 placeholder="+51 999 999 999">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold">Email (opcional)</label>
+          <input type="email" id="leadEmail" class="form-control form-control-sm">
+        </div>
+        <div>
+          <label class="form-label small fw-semibold">¿Qué busca? (opcional)</label>
+          <textarea id="leadMensaje" class="form-control form-control-sm" rows="2"
+                    placeholder="Casa, departamento, zona, presupuesto…"></textarea>
+        </div>
+        <div id="leadError" class="text-danger small mt-2 d-none"></div>
+        <div id="leadOk" class="text-success small mt-2 d-none">
+          ¡Gracias! Un asesor se comunicará con usted pronto.
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button onclick="guardarLead()" class="btn btn-primary btn-sm w-100">
+          <i class="bi bi-send"></i> Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let sessionToken = null;
+
+async function iniciarSesion() {
+  const cached = sessionStorage.getItem('chatToken');
+  if (cached) { sessionToken = cached; return; }
+  const r = await fetch('/chatbot/api/sesion', {method:'POST'});
+  const d = await r.json();
+  sessionToken = d.session_token;
+  sessionStorage.setItem('chatToken', sessionToken);
+}
+
+function agregarBurbuja(texto, esUsuario) {
+  const container = document.getElementById('chatMessages');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'd-flex gap-2 mb-3' + (esUsuario ? ' flex-row-reverse' : '');
+
+  const icon = document.createElement('div');
+  icon.style.cssText = 'width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;';
+  if (esUsuario) {
+    icon.style.background = '#1a3c5e';
+    icon.innerHTML = '<i class="bi bi-person text-white" style="font-size:.85rem;"></i>';
+  } else {
+    icon.style.background = 'white';
+    icon.style.border = '1px solid #e2e8f0';
+    icon.innerHTML = '<i class="bi bi-robot text-primary" style="font-size:.85rem;"></i>';
+  }
+
+  const burbuja = document.createElement('div');
+  burbuja.style.cssText = 'max-width:80%;font-size:.9rem;padding:.6rem .9rem;border-radius:12px;';
+  if (esUsuario) {
+    burbuja.style.background = '#1a3c5e';
+    burbuja.style.color = 'white';
+    burbuja.style.borderBottomRightRadius = '2px';
+  } else {
+    burbuja.style.background = 'white';
+    burbuja.style.boxShadow = '0 1px 3px rgba(0,0,0,.08)';
+    burbuja.style.borderBottomLeftRadius = '2px';
+  }
+  burbuja.textContent = texto;
+
+  if (esUsuario) {
+    wrapper.appendChild(burbuja);
+    wrapper.appendChild(icon);
+  } else {
+    wrapper.appendChild(icon);
+    wrapper.appendChild(burbuja);
+  }
+
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+function mostrarTyping() {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.id = 'typing';
+  div.className = 'd-flex gap-2 mb-3';
+  div.innerHTML = `
+    <div style="width:32px;height:32px;border-radius:50%;background:white;border:1px solid #e2e8f0;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+      <i class="bi bi-robot text-primary" style="font-size:.85rem;"></i>
+    </div>
+    <div class="bg-white rounded-3 shadow-sm p-3 d-flex gap-1 align-items-center">
+      <span class="spinner-grow spinner-grow-sm text-muted" style="animation-delay:0s"></span>
+      <span class="spinner-grow spinner-grow-sm text-muted" style="animation-delay:.15s"></span>
+      <span class="spinner-grow spinner-grow-sm text-muted" style="animation-delay:.3s"></span>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+async function enviarMensaje() {
+  if (!sessionToken) await iniciarSesion();
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+  agregarBurbuja(msg, true);
+  mostrarTyping();
+
+  try {
+    const r = await fetch('/chatbot/api/mensaje', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({session_token: sessionToken, message: msg})
+    });
+    const d = await r.json();
+    document.getElementById('typing')?.remove();
+    agregarBurbuja(d.respuesta || 'Error al obtener respuesta.', false);
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    agregarBurbuja('Error de conexión. Por favor intente nuevamente.', false);
+  }
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+function abrirModalLead() {
+  new bootstrap.Modal(document.getElementById('modalLead')).show();
+}
+
+async function guardarLead() {
+  const nombre = document.getElementById('leadNombre').value.trim();
+  const telefono = document.getElementById('leadTelefono').value.trim();
+  if (!nombre && !telefono) {
+    document.getElementById('leadError').textContent = 'Ingrese al menos su nombre o teléfono.';
+    document.getElementById('leadError').classList.remove('d-none');
+    return;
+  }
+  document.getElementById('leadError').classList.add('d-none');
+  const r = await fetch('/chatbot/api/lead', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      nombre,
+      telefono,
+      email: document.getElementById('leadEmail').value,
+      mensaje: document.getElementById('leadMensaje').value,
+    })
+  });
+  const d = await r.json();
+  if (d.ok) {
+    document.getElementById('leadOk').classList.remove('d-none');
+    agregarBurbuja(`¡Gracias ${nombre}! Un asesor se comunicará contigo pronto.`, false);
+    setTimeout(() => bootstrap.Modal.getInstance(document.getElementById('modalLead')).hide(), 2000);
+  }
+}
+
+// Iniciar sesión al cargar
+iniciarSesion();
+</script>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Nueva Propiedad{% endblock %}
+{% block page_title %}Nueva Propiedad{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <form method="post" enctype="multipart/form-data">
+      <!-- Datos básicos -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white fw-semibold border-0 pt-3">
+          <i class="bi bi-house text-primary"></i> Datos Básicos
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Título <span class="text-danger">*</span></label>
+              <input type="text" name="titulo" class="form-control" required
+                     placeholder="Ej: Casa moderna con jardín en Miraflores">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Tipo <span class="text-danger">*</span></label>
+              <select name="tipo" class="form-select" required>
+                <option value="Casa">Casa</option>
+                <option value="Departamento">Departamento</option>
+                <option value="Terreno">Terreno</option>
+                <option value="Local">Local Comercial</option>
+                <option value="Oficina">Oficina</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Operación <span class="text-danger">*</span></label>
+              <select name="operacion" class="form-select" required>
+                <option value="Venta">Venta</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Alquiler-Venta">Alquiler / Venta</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Estado</label>
+              <select name="estado" class="form-select">
+                <option value="Disponible">Disponible</option>
+                <option value="Reservado">Reservado</option>
+                <option value="Vendido">Vendido</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Precio y área -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white fw-semibold border-0 pt-3">
+          <i class="bi bi-cash-coin text-primary"></i> Precio y Área
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Moneda</label>
+              <select name="moneda" class="form-select">
+                <option value="USD">USD</option>
+                <option value="PEN">S/ (Soles)</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Precio</label>
+              <input type="number" name="precio" class="form-control" step="1" min="0"
+                     placeholder="150000">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Área construida (m²)</label>
+              <input type="number" name="area_m2" class="form-control" step="0.5" min="0">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Área terreno (m²)</label>
+              <input type="number" name="area_terreno_m2" class="form-control" step="0.5" min="0">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Dormitorios</label>
+              <input type="number" name="dormitorios" class="form-control" min="0" value="0">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-semibold">Baños</label>
+              <input type="number" name="banos" class="form-control" min="0" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ubicación -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white fw-semibold border-0 pt-3">
+          <i class="bi bi-geo-alt text-primary"></i> Ubicación
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Distrito</label>
+              <input type="text" name="distrito" class="form-control" placeholder="Miraflores">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Provincia</label>
+              <input type="text" name="provincia" class="form-control" placeholder="Lima">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Departamento</label>
+              <input type="text" name="departamento" class="form-control" placeholder="Lima">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Dirección referencial</label>
+              <input type="text" name="direccion" class="form-control"
+                     placeholder="Av. Larco cuadra 3 (referencia)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descripción y características -->
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-white fw-semibold border-0 pt-3">
+          <i class="bi bi-card-text text-primary"></i> Descripción
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Descripción</label>
+            <textarea name="descripcion" class="form-control" rows="4"
+                      placeholder="Describe la propiedad: distribución, acabados, ventajas, etc."></textarea>
+          </div>
+          <div>
+            <label class="form-label small fw-semibold">Características</label>
+            <div class="row g-2">
+              {% for c in ["Cochera","Jardín","Piscina","Ascensor","Seguridad 24h","Terraza",
+                           "Aire acondicionado","Amoblado","Closets","Cocina equipada",
+                           "Vista al mar","Balcón","Depósito","Área de lavandería"] %}
+              <div class="col-md-4 col-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="caracteristicas"
+                         value="{{ c }}" id="c_{{ loop.index }}">
+                  <label class="form-check-label small" for="c_{{ loop.index }}">{{ c }}</label>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archivos -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white fw-semibold border-0 pt-3">
+          <i class="bi bi-images text-primary"></i> Fotos y PDFs
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Fotos</label>
+            <input type="file" name="fotos" class="form-control" multiple
+                   accept="image/jpeg,image/png,image/webp">
+            <div class="form-text">La primera foto será la portada. Formatos: JPG, PNG, WEBP</div>
+          </div>
+          <div>
+            <label class="form-label small fw-semibold">Archivos PDF (brochure, planos)</label>
+            <input type="file" name="pdfs" class="form-control" multiple accept=".pdf">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 justify-content-end">
+        <a href="{{ url_for('inmuebles.inmuebles_lista') }}" class="btn btn-outline-secondary">
+          Cancelar
+        </a>
+        <button type="submit" class="btn btn-success px-4">
+          <i class="bi bi-check-lg"></i> Guardar Propiedad
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
