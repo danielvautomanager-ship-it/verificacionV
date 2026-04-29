@@ -4,34 +4,6 @@
   "graph": {
     "hyperedges": [
       {
-        "id": "erp_maintenance_core_entities",
-        "label": "ERP Maintenance Core Entities: OS, Equipo, Tecnico",
-        "nodes": [
-          "concept_orden_servicio",
-          "concept_equipo",
-          "concept_tecnico"
-        ],
-        "relation": "participate_in",
-        "confidence": "INFERRED",
-        "confidence_score": 0.9,
-        "source_file": "templates/ordenes/nueva.html"
-      },
-      {
-        "id": "kpi_reporting_flow",
-        "label": "KPI Reporting Flow: Dashboard, Indicadores, MTTR, Disponibilidad",
-        "nodes": [
-          "dashboard_template",
-          "reportes_indicadores_template",
-          "concept_kpi",
-          "concept_mttr",
-          "concept_disponibilidad"
-        ],
-        "relation": "implement",
-        "confidence": "INFERRED",
-        "confidence_score": 0.85,
-        "source_file": "templates/reportes/indicadores.html"
-      },
-      {
         "id": "base_template_inheritance",
         "label": "All Templates Extend Base Template via Jinja2 Inheritance",
         "nodes": [
@@ -50,6 +22,77 @@
         "confidence": "EXTRACTED",
         "confidence_score": 1.0,
         "source_file": "templates/base.html"
+      },
+      {
+        "id": "kpi_reporting_flow",
+        "label": "KPI Reporting Flow: Dashboard, Indicadores, MTTR, Disponibilidad",
+        "nodes": [
+          "dashboard_template",
+          "reportes_indicadores_template",
+          "concept_kpi",
+          "concept_mttr",
+          "concept_disponibilidad"
+        ],
+        "relation": "implement",
+        "confidence": "INFERRED",
+        "confidence_score": 0.85,
+        "source_file": "templates/reportes/indicadores.html"
+      },
+      {
+        "id": "erp_maintenance_core_entities",
+        "label": "ERP Maintenance Core Entities: OS, Equipo, Tecnico",
+        "nodes": [
+          "concept_orden_servicio",
+          "concept_equipo",
+          "concept_tecnico"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "templates/ordenes/nueva.html"
+      },
+      {
+        "id": "kpi_data_flow",
+        "label": "KPI Data Flow: Dashboard and Reportes consume KPI functions from database",
+        "nodes": [
+          "app_dashboard",
+          "app_reportes",
+          "database_kpi_resumen",
+          "database_kpi_por_mes",
+          "database_kpi_disponibilidad"
+        ],
+        "relation": "participate_in",
+        "confidence": "INFERRED",
+        "confidence_score": 0.9,
+        "source_file": "app.py"
+      },
+      {
+        "id": "orden_servicio_crud_flow",
+        "label": "Service Order CRUD Flow: routes create/read/update orders via database layer recording history",
+        "nodes": [
+          "app_ordenes_nueva",
+          "database_crear_os",
+          "database_tabla_historial_estados"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "app.py"
+      },
+      {
+        "id": "db_schema_init",
+        "label": "Database Schema Initialization: init_db creates all four core tables",
+        "nodes": [
+          "database_init_db",
+          "database_tabla_equipos",
+          "database_tabla_tecnicos",
+          "database_tabla_ordenes_servicio",
+          "database_tabla_historial_estados"
+        ],
+        "relation": "implement",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "database.py"
       }
     ]
   },
@@ -87,7 +130,7 @@
       "source_file": "database.py",
       "source_location": "L130",
       "id": "verificacionv_database_kpi_resumen",
-      "community": 4,
+      "community": 7,
       "norm_label": "kpi_resumen()"
     },
     {
@@ -96,7 +139,7 @@
       "source_file": "database.py",
       "source_location": "L168",
       "id": "verificacionv_database_kpi_por_mes",
-      "community": 4,
+      "community": 7,
       "norm_label": "kpi_por_mes()"
     },
     {
@@ -105,7 +148,7 @@
       "source_file": "database.py",
       "source_location": "L182",
       "id": "verificacionv_database_kpi_disponibilidad",
-      "community": 4,
+      "community": 7,
       "norm_label": "kpi_disponibilidad()"
     },
     {
@@ -114,7 +157,7 @@
       "source_file": "database.py",
       "source_location": "L204",
       "id": "verificacionv_database_listar_os",
-      "community": 4,
+      "community": 6,
       "norm_label": "listar_os()"
     },
     {
@@ -123,7 +166,7 @@
       "source_file": "database.py",
       "source_location": "L224",
       "id": "verificacionv_database_get_os",
-      "community": 2,
+      "community": 3,
       "norm_label": "get_os()"
     },
     {
@@ -132,7 +175,7 @@
       "source_file": "database.py",
       "source_location": "L237",
       "id": "verificacionv_database_crear_os",
-      "community": 2,
+      "community": 6,
       "norm_label": "crear_os()"
     },
     {
@@ -150,7 +193,7 @@
       "source_file": "database.py",
       "source_location": "L301",
       "id": "verificacionv_database_listar_equipos",
-      "community": 1,
+      "community": 6,
       "norm_label": "listar_equipos()"
     },
     {
@@ -159,7 +202,7 @@
       "source_file": "database.py",
       "source_location": "L308",
       "id": "verificacionv_database_get_equipo",
-      "community": 7,
+      "community": 2,
       "norm_label": "get_equipo()"
     },
     {
@@ -177,7 +220,7 @@
       "source_file": "database.py",
       "source_location": "L327",
       "id": "verificacionv_database_actualizar_equipo",
-      "community": 7,
+      "community": 2,
       "norm_label": "actualizar_equipo()"
     },
     {
@@ -186,7 +229,7 @@
       "source_file": "database.py",
       "source_location": "L340",
       "id": "verificacionv_database_listar_tecnicos",
-      "community": 1,
+      "community": 3,
       "norm_label": "listar_tecnicos()"
     },
     {
@@ -195,7 +238,7 @@
       "source_file": "database.py",
       "source_location": "L351",
       "id": "verificacionv_database_crear_tecnico",
-      "community": 2,
+      "community": 3,
       "norm_label": "crear_tecnico()"
     },
     {
@@ -204,7 +247,7 @@
       "source_file": "database.py",
       "source_location": "L361",
       "id": "verificacionv_database_actualizar_tecnico",
-      "community": 2,
+      "community": 3,
       "norm_label": "actualizar_tecnico()"
     },
     {
@@ -213,7 +256,7 @@
       "source_file": "app.py",
       "source_location": "L1",
       "id": "app_py",
-      "community": 1,
+      "community": 3,
       "norm_label": "app.py"
     },
     {
@@ -222,7 +265,7 @@
       "source_file": "app.py",
       "source_location": "L12",
       "id": "verificacionv_app_dashboard",
-      "community": 4,
+      "community": 7,
       "norm_label": "dashboard()"
     },
     {
@@ -231,7 +274,7 @@
       "source_file": "app.py",
       "source_location": "L24",
       "id": "verificacionv_app_api_kpi",
-      "community": 4,
+      "community": 7,
       "norm_label": "api_kpi()"
     },
     {
@@ -240,7 +283,7 @@
       "source_file": "app.py",
       "source_location": "L34",
       "id": "verificacionv_app_ordenes_lista",
-      "community": 1,
+      "community": 6,
       "norm_label": "ordenes_lista()"
     },
     {
@@ -249,7 +292,7 @@
       "source_file": "app.py",
       "source_location": "L52",
       "id": "verificacionv_app_ordenes_nueva",
-      "community": 1,
+      "community": 6,
       "norm_label": "ordenes_nueva()"
     },
     {
@@ -258,7 +301,7 @@
       "source_file": "app.py",
       "source_location": "L63",
       "id": "verificacionv_app_ordenes_detalle",
-      "community": 1,
+      "community": 3,
       "norm_label": "ordenes_detalle()"
     },
     {
@@ -267,7 +310,7 @@
       "source_file": "app.py",
       "source_location": "L72",
       "id": "verificacionv_app_ordenes_editar",
-      "community": 1,
+      "community": 2,
       "norm_label": "ordenes_editar()"
     },
     {
@@ -276,7 +319,7 @@
       "source_file": "app.py",
       "source_location": "L81",
       "id": "verificacionv_app_equipos_lista",
-      "community": 1,
+      "community": 6,
       "norm_label": "equipos_lista()"
     },
     {
@@ -285,7 +328,7 @@
       "source_file": "app.py",
       "source_location": "L86",
       "id": "verificacionv_app_equipos_nuevo",
-      "community": 1,
+      "community": 2,
       "norm_label": "equipos_nuevo()"
     },
     {
@@ -294,7 +337,7 @@
       "source_file": "app.py",
       "source_location": "L98",
       "id": "verificacionv_app_equipos_editar",
-      "community": 7,
+      "community": 2,
       "norm_label": "equipos_editar()"
     },
     {
@@ -303,7 +346,7 @@
       "source_file": "app.py",
       "source_location": "L113",
       "id": "verificacionv_app_tecnicos_lista",
-      "community": 1,
+      "community": 3,
       "norm_label": "tecnicos_lista()"
     },
     {
@@ -312,7 +355,7 @@
       "source_file": "app.py",
       "source_location": "L118",
       "id": "verificacionv_app_tecnicos_nuevo",
-      "community": 1,
+      "community": 3,
       "norm_label": "tecnicos_nuevo()"
     },
     {
@@ -321,7 +364,7 @@
       "source_file": "app.py",
       "source_location": "L130",
       "id": "verificacionv_app_tecnicos_editar",
-      "community": 1,
+      "community": 3,
       "norm_label": "tecnicos_editar()"
     },
     {
@@ -330,142 +373,16 @@
       "source_file": "app.py",
       "source_location": "L146",
       "id": "verificacionv_app_reportes",
-      "community": 4,
+      "community": 7,
       "norm_label": "reportes()"
-    },
-    {
-      "label": "Base HTML Template",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "id": "base_template",
-      "community": 3,
-      "norm_label": "base html template"
     },
     {
       "label": "Dashboard Template",
       "file_type": "code",
       "source_file": "templates/dashboard.html",
       "id": "dashboard_template",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboard template"
-    },
-    {
-      "label": "Equipos Form Template",
-      "file_type": "code",
-      "source_file": "templates/equipos/form.html",
-      "id": "equipos_form_template",
-      "community": 3,
-      "norm_label": "equipos form template"
-    },
-    {
-      "label": "Equipos Lista Template",
-      "file_type": "code",
-      "source_file": "templates/equipos/lista.html",
-      "id": "equipos_lista_template",
-      "community": 8,
-      "norm_label": "equipos lista template"
-    },
-    {
-      "label": "Tecnicos Form Template",
-      "file_type": "code",
-      "source_file": "templates/tecnicos/form.html",
-      "id": "tecnicos_form_template",
-      "community": 3,
-      "norm_label": "tecnicos form template"
-    },
-    {
-      "label": "Tecnicos Lista Template",
-      "file_type": "code",
-      "source_file": "templates/tecnicos/lista.html",
-      "id": "tecnicos_lista_template",
-      "community": 9,
-      "norm_label": "tecnicos lista template"
-    },
-    {
-      "label": "Reportes Indicadores KPI Template",
-      "file_type": "code",
-      "source_file": "templates/reportes/indicadores.html",
-      "id": "reportes_indicadores_template",
-      "community": 0,
-      "norm_label": "reportes indicadores kpi template"
-    },
-    {
-      "label": "Ordenes Lista Template",
-      "file_type": "code",
-      "source_file": "templates/ordenes/lista.html",
-      "id": "ordenes_lista_template",
-      "community": 5,
-      "norm_label": "ordenes lista template"
-    },
-    {
-      "label": "Ordenes Nueva Template",
-      "file_type": "code",
-      "source_file": "templates/ordenes/nueva.html",
-      "id": "ordenes_nueva_template",
-      "community": 6,
-      "norm_label": "ordenes nueva template"
-    },
-    {
-      "label": "Ordenes Detalle Template",
-      "file_type": "code",
-      "source_file": "templates/ordenes/detalle.html",
-      "id": "ordenes_detalle_template",
-      "community": 5,
-      "norm_label": "ordenes detalle template"
-    },
-    {
-      "label": "KPI Card Component",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 58-69",
-      "id": "base_kpi_card",
-      "community": 0,
-      "norm_label": "kpi card component"
-    },
-    {
-      "label": "Badge Estado Component",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 72-84",
-      "id": "base_badge_estado",
-      "community": 6,
-      "norm_label": "badge estado component"
-    },
-    {
-      "label": "Sidebar Navigation",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 96-128",
-      "id": "base_sidebar",
-      "community": 10,
-      "norm_label": "sidebar navigation"
-    },
-    {
-      "label": "Bootstrap 5.3.3",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 7",
-      "id": "base_bootstrap",
-      "community": 3,
-      "norm_label": "bootstrap 5.3.3"
-    },
-    {
-      "label": "Chart.js 4.4.3",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 154",
-      "id": "base_chartjs",
-      "community": 0,
-      "norm_label": "chart.js 4.4.3"
-    },
-    {
-      "label": "Bootstrap Icons 1.11.3",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 8",
-      "id": "base_bootstrap_icons",
-      "community": 3,
-      "norm_label": "bootstrap icons 1.11.3"
     },
     {
       "label": "Dashboard KPI Data Context",
@@ -473,7 +390,7 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 13-74",
       "id": "dashboard_kpi_data",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboard kpi data context"
     },
     {
@@ -482,7 +399,7 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 144-154",
       "id": "dashboard_chart_mes",
-      "community": 0,
+      "community": 1,
       "norm_label": "os por mes chart"
     },
     {
@@ -491,7 +408,7 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 156-171",
       "id": "dashboard_chart_disp",
-      "community": 0,
+      "community": 1,
       "norm_label": "disponibilidad chart"
     },
     {
@@ -500,134 +417,8 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 173-183",
       "id": "dashboard_chart_tipo",
-      "community": 0,
+      "community": 1,
       "norm_label": "correctivo vs preventivo doughnut chart"
-    },
-    {
-      "label": "Tendencia Mensual OS Line Chart",
-      "file_type": "code",
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 122-134",
-      "id": "reportes_chart_tendencia",
-      "community": 0,
-      "norm_label": "tendencia mensual os line chart"
-    },
-    {
-      "label": "OS por Tipo Pie Chart",
-      "file_type": "code",
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 137-145",
-      "id": "reportes_chart_tipo",
-      "community": 0,
-      "norm_label": "os por tipo pie chart"
-    },
-    {
-      "label": "Disponibilidad por Equipo Bar Chart",
-      "file_type": "code",
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 148-162",
-      "id": "reportes_chart_disp",
-      "community": 0,
-      "norm_label": "disponibilidad por equipo bar chart"
-    },
-    {
-      "label": "MTTR Mensual Bar Chart",
-      "file_type": "code",
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 165-173",
-      "id": "reportes_chart_mttr",
-      "community": 0,
-      "norm_label": "mttr mensual bar chart"
-    },
-    {
-      "label": "Flask Endpoint: dashboard",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 103",
-      "id": "endpoint_dashboard",
-      "community": 3,
-      "norm_label": "flask endpoint: dashboard"
-    },
-    {
-      "label": "Flask Endpoint: ordenes_lista",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 108",
-      "id": "endpoint_ordenes_lista",
-      "community": 5,
-      "norm_label": "flask endpoint: ordenes_lista"
-    },
-    {
-      "label": "Flask Endpoint: ordenes_nueva",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 111",
-      "id": "endpoint_ordenes_nueva",
-      "community": 5,
-      "norm_label": "flask endpoint: ordenes_nueva"
-    },
-    {
-      "label": "Flask Endpoint: equipos_lista",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 116",
-      "id": "endpoint_equipos_lista",
-      "community": 3,
-      "norm_label": "flask endpoint: equipos_lista"
-    },
-    {
-      "label": "Flask Endpoint: equipos_nuevo",
-      "file_type": "code",
-      "source_file": "templates/equipos/lista.html",
-      "source_location": "line 7",
-      "id": "endpoint_equipos_nuevo",
-      "community": 8,
-      "norm_label": "flask endpoint: equipos_nuevo"
-    },
-    {
-      "label": "Flask Endpoint: equipos_editar",
-      "file_type": "code",
-      "source_file": "templates/equipos/lista.html",
-      "source_location": "line 34",
-      "id": "endpoint_equipos_editar",
-      "community": 8,
-      "norm_label": "flask endpoint: equipos_editar"
-    },
-    {
-      "label": "Flask Endpoint: tecnicos_lista",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 119",
-      "id": "endpoint_tecnicos_lista",
-      "community": 3,
-      "norm_label": "flask endpoint: tecnicos_lista"
-    },
-    {
-      "label": "Flask Endpoint: tecnicos_nuevo",
-      "file_type": "code",
-      "source_file": "templates/tecnicos/lista.html",
-      "source_location": "line 7",
-      "id": "endpoint_tecnicos_nuevo",
-      "community": 9,
-      "norm_label": "flask endpoint: tecnicos_nuevo"
-    },
-    {
-      "label": "Flask Endpoint: tecnicos_editar",
-      "file_type": "code",
-      "source_file": "templates/tecnicos/lista.html",
-      "source_location": "line 42",
-      "id": "endpoint_tecnicos_editar",
-      "community": 9,
-      "norm_label": "flask endpoint: tecnicos_editar"
-    },
-    {
-      "label": "Flask Endpoint: reportes",
-      "file_type": "code",
-      "source_file": "templates/base.html",
-      "source_location": "line 124",
-      "id": "endpoint_reportes",
-      "community": 3,
-      "norm_label": "flask endpoint: reportes"
     },
     {
       "label": "Flask Endpoint: ordenes_detalle",
@@ -635,49 +426,8 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 124",
       "id": "endpoint_ordenes_detalle",
-      "community": 5,
-      "norm_label": "flask endpoint: ordenes_detalle"
-    },
-    {
-      "label": "Flask Endpoint: ordenes_editar",
-      "file_type": "code",
-      "source_file": "templates/ordenes/detalle.html",
-      "source_location": "line 92",
-      "id": "endpoint_ordenes_editar",
-      "community": 5,
-      "norm_label": "flask endpoint: ordenes_editar"
-    },
-    {
-      "label": "Orden de Servicio (OS)",
-      "file_type": "document",
-      "source_file": "templates/ordenes/nueva.html",
-      "id": "concept_orden_servicio",
-      "community": 6,
-      "norm_label": "orden de servicio (os)"
-    },
-    {
-      "label": "Equipo / Activo",
-      "file_type": "document",
-      "source_file": "templates/equipos/form.html",
-      "id": "concept_equipo",
-      "community": 6,
-      "norm_label": "equipo / activo"
-    },
-    {
-      "label": "T\u00e9cnico",
-      "file_type": "document",
-      "source_file": "templates/tecnicos/form.html",
-      "id": "concept_tecnico",
-      "community": 6,
-      "norm_label": "tecnico"
-    },
-    {
-      "label": "KPI Maintenance Indicators",
-      "file_type": "document",
-      "source_file": "templates/reportes/indicadores.html",
-      "id": "concept_kpi",
       "community": 0,
-      "norm_label": "kpi maintenance indicators"
+      "norm_label": "flask endpoint: ordenes_detalle"
     },
     {
       "label": "MTTR (Mean Time To Repair)",
@@ -685,7 +435,7 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 41",
       "id": "concept_mttr",
-      "community": 0,
+      "community": 1,
       "norm_label": "mttr (mean time to repair)"
     },
     {
@@ -694,8 +444,756 @@
       "source_file": "templates/dashboard.html",
       "source_location": "line 93",
       "id": "concept_disponibilidad",
-      "community": 0,
+      "community": 1,
       "norm_label": "disponibilidad de equipos"
+    },
+    {
+      "label": "Base HTML Template",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "id": "base_template",
+      "community": 0,
+      "norm_label": "base html template"
+    },
+    {
+      "label": "KPI Card Component",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 58-69",
+      "id": "base_kpi_card",
+      "community": 1,
+      "norm_label": "kpi card component"
+    },
+    {
+      "label": "Badge Estado Component",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 72-84",
+      "id": "base_badge_estado",
+      "community": 0,
+      "norm_label": "badge estado component"
+    },
+    {
+      "label": "Sidebar Navigation",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 96-128",
+      "id": "base_sidebar",
+      "community": 11,
+      "norm_label": "sidebar navigation"
+    },
+    {
+      "label": "Bootstrap 5.3.3",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 7",
+      "id": "base_bootstrap",
+      "community": 0,
+      "norm_label": "bootstrap 5.3.3"
+    },
+    {
+      "label": "Chart.js 4.4.3",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 154",
+      "id": "base_chartjs",
+      "community": 1,
+      "norm_label": "chart.js 4.4.3"
+    },
+    {
+      "label": "Bootstrap Icons 1.11.3",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 8",
+      "id": "base_bootstrap_icons",
+      "community": 0,
+      "norm_label": "bootstrap icons 1.11.3"
+    },
+    {
+      "label": "Flask Endpoint: dashboard",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 103",
+      "id": "endpoint_dashboard",
+      "community": 0,
+      "norm_label": "flask endpoint: dashboard"
+    },
+    {
+      "label": "Flask Endpoint: ordenes_lista",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 108",
+      "id": "endpoint_ordenes_lista",
+      "community": 0,
+      "norm_label": "flask endpoint: ordenes_lista"
+    },
+    {
+      "label": "Flask Endpoint: ordenes_nueva",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 111",
+      "id": "endpoint_ordenes_nueva",
+      "community": 0,
+      "norm_label": "flask endpoint: ordenes_nueva"
+    },
+    {
+      "label": "Flask Endpoint: equipos_lista",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 116",
+      "id": "endpoint_equipos_lista",
+      "community": 0,
+      "norm_label": "flask endpoint: equipos_lista"
+    },
+    {
+      "label": "Flask Endpoint: tecnicos_lista",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 119",
+      "id": "endpoint_tecnicos_lista",
+      "community": 0,
+      "norm_label": "flask endpoint: tecnicos_lista"
+    },
+    {
+      "label": "Flask Endpoint: reportes",
+      "file_type": "code",
+      "source_file": "templates/base.html",
+      "source_location": "line 124",
+      "id": "endpoint_reportes",
+      "community": 0,
+      "norm_label": "flask endpoint: reportes"
+    },
+    {
+      "label": "Equipos Form Template",
+      "file_type": "code",
+      "source_file": "templates/equipos/form.html",
+      "id": "equipos_form_template",
+      "community": 0,
+      "norm_label": "equipos form template"
+    },
+    {
+      "label": "Equipo / Activo",
+      "file_type": "document",
+      "source_file": "templates/equipos/form.html",
+      "id": "concept_equipo",
+      "community": 0,
+      "norm_label": "equipo / activo"
+    },
+    {
+      "label": "Equipos Lista Template",
+      "file_type": "code",
+      "source_file": "templates/equipos/lista.html",
+      "id": "equipos_lista_template",
+      "community": 0,
+      "norm_label": "equipos lista template"
+    },
+    {
+      "label": "Flask Endpoint: equipos_nuevo",
+      "file_type": "code",
+      "source_file": "templates/equipos/lista.html",
+      "source_location": "line 7",
+      "id": "endpoint_equipos_nuevo",
+      "community": 0,
+      "norm_label": "flask endpoint: equipos_nuevo"
+    },
+    {
+      "label": "Flask Endpoint: equipos_editar",
+      "file_type": "code",
+      "source_file": "templates/equipos/lista.html",
+      "source_location": "line 34",
+      "id": "endpoint_equipos_editar",
+      "community": 0,
+      "norm_label": "flask endpoint: equipos_editar"
+    },
+    {
+      "label": "Tecnicos Form Template",
+      "file_type": "code",
+      "source_file": "templates/tecnicos/form.html",
+      "id": "tecnicos_form_template",
+      "community": 0,
+      "norm_label": "tecnicos form template"
+    },
+    {
+      "label": "T\u00e9cnico",
+      "file_type": "document",
+      "source_file": "templates/tecnicos/form.html",
+      "id": "concept_tecnico",
+      "community": 0,
+      "norm_label": "tecnico"
+    },
+    {
+      "label": "Tecnicos Lista Template",
+      "file_type": "code",
+      "source_file": "templates/tecnicos/lista.html",
+      "id": "tecnicos_lista_template",
+      "community": 0,
+      "norm_label": "tecnicos lista template"
+    },
+    {
+      "label": "Flask Endpoint: tecnicos_nuevo",
+      "file_type": "code",
+      "source_file": "templates/tecnicos/lista.html",
+      "source_location": "line 7",
+      "id": "endpoint_tecnicos_nuevo",
+      "community": 0,
+      "norm_label": "flask endpoint: tecnicos_nuevo"
+    },
+    {
+      "label": "Flask Endpoint: tecnicos_editar",
+      "file_type": "code",
+      "source_file": "templates/tecnicos/lista.html",
+      "source_location": "line 42",
+      "id": "endpoint_tecnicos_editar",
+      "community": 0,
+      "norm_label": "flask endpoint: tecnicos_editar"
+    },
+    {
+      "label": "Reportes Indicadores KPI Template",
+      "file_type": "code",
+      "source_file": "templates/reportes/indicadores.html",
+      "id": "reportes_indicadores_template",
+      "community": 1,
+      "norm_label": "reportes indicadores kpi template"
+    },
+    {
+      "label": "Tendencia Mensual OS Line Chart",
+      "file_type": "code",
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 122-134",
+      "id": "reportes_chart_tendencia",
+      "community": 1,
+      "norm_label": "tendencia mensual os line chart"
+    },
+    {
+      "label": "OS por Tipo Pie Chart",
+      "file_type": "code",
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 137-145",
+      "id": "reportes_chart_tipo",
+      "community": 1,
+      "norm_label": "os por tipo pie chart"
+    },
+    {
+      "label": "Disponibilidad por Equipo Bar Chart",
+      "file_type": "code",
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 148-162",
+      "id": "reportes_chart_disp",
+      "community": 1,
+      "norm_label": "disponibilidad por equipo bar chart"
+    },
+    {
+      "label": "MTTR Mensual Bar Chart",
+      "file_type": "code",
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 165-173",
+      "id": "reportes_chart_mttr",
+      "community": 1,
+      "norm_label": "mttr mensual bar chart"
+    },
+    {
+      "label": "KPI Maintenance Indicators",
+      "file_type": "document",
+      "source_file": "templates/reportes/indicadores.html",
+      "id": "concept_kpi",
+      "community": 1,
+      "norm_label": "kpi maintenance indicators"
+    },
+    {
+      "label": "Ordenes Lista Template",
+      "file_type": "code",
+      "source_file": "templates/ordenes/lista.html",
+      "id": "ordenes_lista_template",
+      "community": 0,
+      "norm_label": "ordenes lista template"
+    },
+    {
+      "label": "Ordenes Nueva Template",
+      "file_type": "code",
+      "source_file": "templates/ordenes/nueva.html",
+      "id": "ordenes_nueva_template",
+      "community": 0,
+      "norm_label": "ordenes nueva template"
+    },
+    {
+      "label": "Orden de Servicio (OS)",
+      "file_type": "document",
+      "source_file": "templates/ordenes/nueva.html",
+      "id": "concept_orden_servicio",
+      "community": 0,
+      "norm_label": "orden de servicio (os)"
+    },
+    {
+      "label": "Ordenes Detalle Template",
+      "file_type": "code",
+      "source_file": "templates/ordenes/detalle.html",
+      "id": "ordenes_detalle_template",
+      "community": 0,
+      "norm_label": "ordenes detalle template"
+    },
+    {
+      "label": "Flask Endpoint: ordenes_editar",
+      "file_type": "code",
+      "source_file": "templates/ordenes/detalle.html",
+      "source_location": "line 92",
+      "id": "endpoint_ordenes_editar",
+      "community": 0,
+      "norm_label": "flask endpoint: ordenes_editar"
+    },
+    {
+      "label": "Flask Application",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_flask_app",
+      "community": 9,
+      "norm_label": "flask application"
+    },
+    {
+      "label": "dashboard route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:12",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_dashboard",
+      "community": 8,
+      "norm_label": "dashboard route handler"
+    },
+    {
+      "label": "api_kpi route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:23",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_api_kpi",
+      "community": 8,
+      "norm_label": "api_kpi route handler"
+    },
+    {
+      "label": "ordenes_lista route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:33",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_ordenes_lista",
+      "community": 5,
+      "norm_label": "ordenes_lista route handler"
+    },
+    {
+      "label": "ordenes_nueva route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:51",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_ordenes_nueva",
+      "community": 5,
+      "norm_label": "ordenes_nueva route handler"
+    },
+    {
+      "label": "ordenes_detalle route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:62",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_ordenes_detalle",
+      "community": 10,
+      "norm_label": "ordenes_detalle route handler"
+    },
+    {
+      "label": "ordenes_editar route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:71",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_ordenes_editar",
+      "community": 5,
+      "norm_label": "ordenes_editar route handler"
+    },
+    {
+      "label": "equipos_lista route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:80",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_equipos_lista",
+      "community": 5,
+      "norm_label": "equipos_lista route handler"
+    },
+    {
+      "label": "equipos_nuevo route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:85",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_equipos_nuevo",
+      "community": 4,
+      "norm_label": "equipos_nuevo route handler"
+    },
+    {
+      "label": "equipos_editar route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:97",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_equipos_editar",
+      "community": 4,
+      "norm_label": "equipos_editar route handler"
+    },
+    {
+      "label": "tecnicos_lista route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:112",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_tecnicos_lista",
+      "community": 10,
+      "norm_label": "tecnicos_lista route handler"
+    },
+    {
+      "label": "tecnicos_nuevo route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:117",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_tecnicos_nuevo",
+      "community": 4,
+      "norm_label": "tecnicos_nuevo route handler"
+    },
+    {
+      "label": "tecnicos_editar route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:129",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_tecnicos_editar",
+      "community": 10,
+      "norm_label": "tecnicos_editar route handler"
+    },
+    {
+      "label": "reportes route handler",
+      "file_type": "code",
+      "source_file": "app.py",
+      "source_location": "app.py:145",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "app_reportes",
+      "community": 8,
+      "norm_label": "reportes route handler"
+    },
+    {
+      "label": "init_db",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:14",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_init_db",
+      "community": 9,
+      "norm_label": "init_db"
+    },
+    {
+      "label": "get_db",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:7",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_get_db",
+      "community": 4,
+      "norm_label": "get_db"
+    },
+    {
+      "label": "kpi_resumen",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:130",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_kpi_resumen",
+      "community": 8,
+      "norm_label": "kpi_resumen"
+    },
+    {
+      "label": "kpi_por_mes",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:168",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_kpi_por_mes",
+      "community": 8,
+      "norm_label": "kpi_por_mes"
+    },
+    {
+      "label": "kpi_disponibilidad",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:182",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_kpi_disponibilidad",
+      "community": 8,
+      "norm_label": "kpi_disponibilidad"
+    },
+    {
+      "label": "listar_os",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:204",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_listar_os",
+      "community": 9,
+      "norm_label": "listar_os"
+    },
+    {
+      "label": "get_os",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:224",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_get_os",
+      "community": 10,
+      "norm_label": "get_os"
+    },
+    {
+      "label": "crear_os",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:237",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_crear_os",
+      "community": 5,
+      "norm_label": "crear_os"
+    },
+    {
+      "label": "actualizar_os",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:261",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_actualizar_os",
+      "community": 5,
+      "norm_label": "actualizar_os"
+    },
+    {
+      "label": "listar_equipos",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:301",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_listar_equipos",
+      "community": 5,
+      "norm_label": "listar_equipos"
+    },
+    {
+      "label": "get_equipo",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:308",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_get_equipo",
+      "community": 4,
+      "norm_label": "get_equipo"
+    },
+    {
+      "label": "crear_equipo",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:315",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_crear_equipo",
+      "community": 4,
+      "norm_label": "crear_equipo"
+    },
+    {
+      "label": "actualizar_equipo",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:327",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_actualizar_equipo",
+      "community": 4,
+      "norm_label": "actualizar_equipo"
+    },
+    {
+      "label": "listar_tecnicos",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:340",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_listar_tecnicos",
+      "community": 10,
+      "norm_label": "listar_tecnicos"
+    },
+    {
+      "label": "crear_tecnico",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:351",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_crear_tecnico",
+      "community": 4,
+      "norm_label": "crear_tecnico"
+    },
+    {
+      "label": "actualizar_tecnico",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:361",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_actualizar_tecnico",
+      "community": 10,
+      "norm_label": "actualizar_tecnico"
+    },
+    {
+      "label": "DB Table: equipos",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:19",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_tabla_equipos",
+      "community": 9,
+      "norm_label": "db table: equipos"
+    },
+    {
+      "label": "DB Table: tecnicos",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:30",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_tabla_tecnicos",
+      "community": 9,
+      "norm_label": "db table: tecnicos"
+    },
+    {
+      "label": "DB Table: ordenes_servicio",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:39",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_tabla_ordenes_servicio",
+      "community": 9,
+      "norm_label": "db table: ordenes_servicio"
+    },
+    {
+      "label": "DB Table: historial_estados",
+      "file_type": "code",
+      "source_file": "database.py",
+      "source_location": "database.py:58",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "database_tabla_historial_estados",
+      "community": 5,
+      "norm_label": "db table: historial_estados"
+    },
+    {
+      "label": "Graphify Knowledge Graph Rules",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "source_location": "CLAUDE.md:1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_md_graphify_rules",
+      "community": 12,
+      "norm_label": "graphify knowledge graph rules"
     }
   ],
   "links": [
@@ -1548,212 +2046,8 @@
       "weight": 1.0,
       "_src": "dashboard_template",
       "_tgt": "base_template",
-      "source": "base_template",
-      "target": "dashboard_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/equipos/form.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "equipos_form_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "equipos_form_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/equipos/lista.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "equipos_lista_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "equipos_lista_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/tecnicos/form.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "tecnicos_form_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "tecnicos_form_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/tecnicos/lista.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "tecnicos_lista_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "tecnicos_lista_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "reportes_indicadores_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "reportes_indicadores_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/lista.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "ordenes_lista_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "ordenes_lista_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "ordenes_nueva_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "ordenes_nueva_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/detalle.html",
-      "source_location": "line 1",
-      "weight": 1.0,
-      "_src": "ordenes_detalle_template",
-      "_tgt": "base_template",
-      "source": "base_template",
-      "target": "ordenes_detalle_template"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 7",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "base_bootstrap",
-      "source": "base_template",
-      "target": "base_bootstrap"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 154",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "base_chartjs",
-      "source": "base_template",
-      "target": "base_chartjs"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 8",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "base_bootstrap_icons",
-      "source": "base_template",
-      "target": "base_bootstrap_icons"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 103",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_dashboard",
-      "source": "base_template",
-      "target": "endpoint_dashboard"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 108",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_ordenes_lista",
-      "source": "base_template",
-      "target": "endpoint_ordenes_lista"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 111",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_ordenes_nueva",
-      "source": "base_template",
-      "target": "endpoint_ordenes_nueva"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 116",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_equipos_lista",
-      "source": "base_template",
-      "target": "endpoint_equipos_lista"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 119",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_tecnicos_lista",
-      "source": "base_template",
-      "target": "endpoint_tecnicos_lista"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/base.html",
-      "source_location": "line 124",
-      "weight": 1.0,
-      "_src": "base_template",
-      "_tgt": "endpoint_reportes",
-      "source": "base_template",
-      "target": "endpoint_reportes"
+      "source": "dashboard_template",
+      "target": "base_template"
     },
     {
       "relation": "calls",
@@ -1876,6 +2170,383 @@
       "target": "concept_disponibilidad"
     },
     {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/dashboard.html",
+      "weight": 0.9,
+      "_src": "dashboard_kpi_data",
+      "_tgt": "concept_kpi",
+      "source": "dashboard_kpi_data",
+      "target": "concept_kpi"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/base.html",
+      "weight": 0.85,
+      "_src": "base_kpi_card",
+      "_tgt": "dashboard_kpi_data",
+      "source": "dashboard_kpi_data",
+      "target": "base_kpi_card"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/dashboard.html",
+      "weight": 0.9,
+      "_src": "dashboard_chart_disp",
+      "_tgt": "reportes_chart_disp",
+      "source": "dashboard_chart_disp",
+      "target": "reportes_chart_disp"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/dashboard.html",
+      "weight": 0.85,
+      "_src": "dashboard_chart_tipo",
+      "_tgt": "reportes_chart_tipo",
+      "source": "dashboard_chart_tipo",
+      "target": "reportes_chart_tipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/lista.html",
+      "source_location": "line 62",
+      "weight": 1.0,
+      "_src": "ordenes_lista_template",
+      "_tgt": "endpoint_ordenes_detalle",
+      "source": "endpoint_ordenes_detalle",
+      "target": "ordenes_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 23",
+      "weight": 1.0,
+      "_src": "reportes_indicadores_template",
+      "_tgt": "concept_mttr",
+      "source": "concept_mttr",
+      "target": "reportes_indicadores_template"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/reportes/indicadores.html",
+      "weight": 0.85,
+      "_src": "concept_mttr",
+      "_tgt": "concept_kpi",
+      "source": "concept_mttr",
+      "target": "concept_kpi"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 66",
+      "weight": 1.0,
+      "_src": "reportes_indicadores_template",
+      "_tgt": "concept_disponibilidad",
+      "source": "concept_disponibilidad",
+      "target": "reportes_indicadores_template"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/reportes/indicadores.html",
+      "weight": 0.85,
+      "_src": "concept_disponibilidad",
+      "_tgt": "concept_kpi",
+      "source": "concept_disponibilidad",
+      "target": "concept_kpi"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "base_bootstrap",
+      "source": "base_template",
+      "target": "base_bootstrap"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 154",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "base_chartjs",
+      "source": "base_template",
+      "target": "base_chartjs"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 8",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "base_bootstrap_icons",
+      "source": "base_template",
+      "target": "base_bootstrap_icons"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 103",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_dashboard",
+      "source": "base_template",
+      "target": "endpoint_dashboard"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 108",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_ordenes_lista",
+      "source": "base_template",
+      "target": "endpoint_ordenes_lista"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 111",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_ordenes_nueva",
+      "source": "base_template",
+      "target": "endpoint_ordenes_nueva"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 116",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_equipos_lista",
+      "source": "base_template",
+      "target": "endpoint_equipos_lista"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 119",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_tecnicos_lista",
+      "source": "base_template",
+      "target": "endpoint_tecnicos_lista"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/base.html",
+      "source_location": "line 124",
+      "weight": 1.0,
+      "_src": "base_template",
+      "_tgt": "endpoint_reportes",
+      "source": "base_template",
+      "target": "endpoint_reportes"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/equipos/form.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "equipos_form_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "equipos_form_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/equipos/lista.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "equipos_lista_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "equipos_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/tecnicos/form.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "tecnicos_form_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "tecnicos_form_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/tecnicos/lista.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "tecnicos_lista_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "tecnicos_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "reportes_indicadores_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "reportes_indicadores_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/lista.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "ordenes_lista_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "ordenes_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "ordenes_nueva_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "ordenes_nueva_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/detalle.html",
+      "source_location": "line 1",
+      "weight": 1.0,
+      "_src": "ordenes_detalle_template",
+      "_tgt": "base_template",
+      "source": "base_template",
+      "target": "ordenes_detalle_template"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "templates/base.html",
+      "weight": 0.75,
+      "_src": "base_badge_estado",
+      "_tgt": "concept_orden_servicio",
+      "source": "base_badge_estado",
+      "target": "concept_orden_servicio"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/reportes/indicadores.html",
+      "source_location": "line 122",
+      "weight": 1.0,
+      "_src": "reportes_indicadores_template",
+      "_tgt": "base_chartjs",
+      "source": "base_chartjs",
+      "target": "reportes_indicadores_template"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/lista.html",
+      "source_location": "line 28",
+      "weight": 1.0,
+      "_src": "ordenes_lista_template",
+      "_tgt": "endpoint_ordenes_lista",
+      "source": "endpoint_ordenes_lista",
+      "target": "ordenes_lista_template"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 65",
+      "weight": 1.0,
+      "_src": "ordenes_nueva_template",
+      "_tgt": "endpoint_ordenes_lista",
+      "source": "endpoint_ordenes_lista",
+      "target": "ordenes_nueva_template"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/detalle.html",
+      "source_location": "line 7",
+      "weight": 1.0,
+      "_src": "ordenes_detalle_template",
+      "_tgt": "endpoint_ordenes_lista",
+      "source": "endpoint_ordenes_lista",
+      "target": "ordenes_detalle_template"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/lista.html",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "_src": "ordenes_lista_template",
+      "_tgt": "endpoint_ordenes_nueva",
+      "source": "endpoint_ordenes_nueva",
+      "target": "ordenes_lista_template"
+    },
+    {
       "relation": "calls",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -1884,8 +2555,20 @@
       "weight": 1.0,
       "_src": "equipos_form_template",
       "_tgt": "endpoint_equipos_lista",
-      "source": "equipos_form_template",
-      "target": "endpoint_equipos_lista"
+      "source": "endpoint_equipos_lista",
+      "target": "equipos_form_template"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/tecnicos/form.html",
+      "source_location": "line 55",
+      "weight": 1.0,
+      "_src": "tecnicos_form_template",
+      "_tgt": "endpoint_tecnicos_lista",
+      "source": "endpoint_tecnicos_lista",
+      "target": "tecnicos_form_template"
     },
     {
       "relation": "implements",
@@ -1898,6 +2581,54 @@
       "_tgt": "concept_equipo",
       "source": "equipos_form_template",
       "target": "concept_equipo"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/equipos/lista.html",
+      "source_location": "line 21",
+      "weight": 1.0,
+      "_src": "equipos_lista_template",
+      "_tgt": "concept_equipo",
+      "source": "concept_equipo",
+      "target": "equipos_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/ordenes/lista.html",
+      "source_location": "line 22",
+      "weight": 0.85,
+      "_src": "ordenes_lista_template",
+      "_tgt": "concept_equipo",
+      "source": "concept_equipo",
+      "target": "ordenes_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 34",
+      "weight": 1.0,
+      "_src": "ordenes_nueva_template",
+      "_tgt": "concept_equipo",
+      "source": "concept_equipo",
+      "target": "ordenes_nueva_template"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 34",
+      "weight": 0.9,
+      "_src": "concept_orden_servicio",
+      "_tgt": "concept_equipo",
+      "source": "concept_equipo",
+      "target": "concept_orden_servicio"
     },
     {
       "relation": "calls",
@@ -1924,30 +2655,6 @@
       "target": "endpoint_equipos_editar"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/equipos/lista.html",
-      "source_location": "line 21",
-      "weight": 1.0,
-      "_src": "equipos_lista_template",
-      "_tgt": "concept_equipo",
-      "source": "equipos_lista_template",
-      "target": "concept_equipo"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/tecnicos/form.html",
-      "source_location": "line 55",
-      "weight": 1.0,
-      "_src": "tecnicos_form_template",
-      "_tgt": "endpoint_tecnicos_lista",
-      "source": "tecnicos_form_template",
-      "target": "endpoint_tecnicos_lista"
-    },
-    {
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -1958,6 +2665,54 @@
       "_tgt": "concept_tecnico",
       "source": "tecnicos_form_template",
       "target": "concept_tecnico"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/tecnicos/lista.html",
+      "source_location": "line 21",
+      "weight": 1.0,
+      "_src": "tecnicos_lista_template",
+      "_tgt": "concept_tecnico",
+      "source": "concept_tecnico",
+      "target": "tecnicos_lista_template"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 43",
+      "weight": 1.0,
+      "_src": "ordenes_nueva_template",
+      "_tgt": "concept_tecnico",
+      "source": "concept_tecnico",
+      "target": "ordenes_nueva_template"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/ordenes/nueva.html",
+      "source_location": "line 43",
+      "weight": 0.9,
+      "_src": "concept_orden_servicio",
+      "_tgt": "concept_tecnico",
+      "source": "concept_tecnico",
+      "target": "concept_orden_servicio"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "templates/ordenes/detalle.html",
+      "source_location": "line 111",
+      "weight": 1.0,
+      "_src": "ordenes_detalle_template",
+      "_tgt": "concept_tecnico",
+      "source": "concept_tecnico",
+      "target": "ordenes_detalle_template"
     },
     {
       "relation": "calls",
@@ -1982,30 +2737,6 @@
       "_tgt": "endpoint_tecnicos_editar",
       "source": "tecnicos_lista_template",
       "target": "endpoint_tecnicos_editar"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/tecnicos/lista.html",
-      "source_location": "line 21",
-      "weight": 1.0,
-      "_src": "tecnicos_lista_template",
-      "_tgt": "concept_tecnico",
-      "source": "tecnicos_lista_template",
-      "target": "concept_tecnico"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 122",
-      "weight": 1.0,
-      "_src": "reportes_indicadores_template",
-      "_tgt": "base_chartjs",
-      "source": "reportes_indicadores_template",
-      "target": "base_chartjs"
     },
     {
       "relation": "implements",
@@ -2068,90 +2799,6 @@
       "target": "concept_kpi"
     },
     {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 23",
-      "weight": 1.0,
-      "_src": "reportes_indicadores_template",
-      "_tgt": "concept_mttr",
-      "source": "reportes_indicadores_template",
-      "target": "concept_mttr"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/reportes/indicadores.html",
-      "source_location": "line 66",
-      "weight": 1.0,
-      "_src": "reportes_indicadores_template",
-      "_tgt": "concept_disponibilidad",
-      "source": "reportes_indicadores_template",
-      "target": "concept_disponibilidad"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/lista.html",
-      "source_location": "line 34",
-      "weight": 1.0,
-      "_src": "ordenes_lista_template",
-      "_tgt": "endpoint_ordenes_nueva",
-      "source": "ordenes_lista_template",
-      "target": "endpoint_ordenes_nueva"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/lista.html",
-      "source_location": "line 62",
-      "weight": 1.0,
-      "_src": "ordenes_lista_template",
-      "_tgt": "endpoint_ordenes_detalle",
-      "source": "ordenes_lista_template",
-      "target": "endpoint_ordenes_detalle"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/lista.html",
-      "source_location": "line 28",
-      "weight": 1.0,
-      "_src": "ordenes_lista_template",
-      "_tgt": "endpoint_ordenes_lista",
-      "source": "ordenes_lista_template",
-      "target": "endpoint_ordenes_lista"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/ordenes/lista.html",
-      "source_location": "line 22",
-      "weight": 0.85,
-      "_src": "ordenes_lista_template",
-      "_tgt": "concept_equipo",
-      "source": "ordenes_lista_template",
-      "target": "concept_equipo"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 65",
-      "weight": 1.0,
-      "_src": "ordenes_nueva_template",
-      "_tgt": "endpoint_ordenes_lista",
-      "source": "ordenes_nueva_template",
-      "target": "endpoint_ordenes_lista"
-    },
-    {
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -2162,42 +2809,6 @@
       "_tgt": "concept_orden_servicio",
       "source": "ordenes_nueva_template",
       "target": "concept_orden_servicio"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 34",
-      "weight": 1.0,
-      "_src": "ordenes_nueva_template",
-      "_tgt": "concept_equipo",
-      "source": "ordenes_nueva_template",
-      "target": "concept_equipo"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 43",
-      "weight": 1.0,
-      "_src": "ordenes_nueva_template",
-      "_tgt": "concept_tecnico",
-      "source": "ordenes_nueva_template",
-      "target": "concept_tecnico"
-    },
-    {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "templates/ordenes/detalle.html",
-      "source_location": "line 7",
-      "weight": 1.0,
-      "_src": "ordenes_detalle_template",
-      "_tgt": "endpoint_ordenes_lista",
-      "source": "ordenes_detalle_template",
-      "target": "endpoint_ordenes_lista"
     },
     {
       "relation": "calls",
@@ -2212,148 +2823,667 @@
       "target": "endpoint_ordenes_editar"
     },
     {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:7",
+      "weight": 1.0,
+      "_src": "app_flask_app",
+      "_tgt": "database_init_db",
+      "source": "app_flask_app",
+      "target": "database_init_db"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:13",
+      "weight": 1.0,
+      "_src": "app_dashboard",
+      "_tgt": "database_kpi_resumen",
+      "source": "app_dashboard",
+      "target": "database_kpi_resumen"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:14",
+      "weight": 1.0,
+      "_src": "app_dashboard",
+      "_tgt": "database_kpi_por_mes",
+      "source": "app_dashboard",
+      "target": "database_kpi_por_mes"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:15",
+      "weight": 1.0,
+      "_src": "app_dashboard",
+      "_tgt": "database_kpi_disponibilidad",
+      "source": "app_dashboard",
+      "target": "database_kpi_disponibilidad"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:16",
+      "weight": 1.0,
+      "_src": "app_dashboard",
+      "_tgt": "database_listar_os",
+      "source": "app_dashboard",
+      "target": "database_listar_os"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "app.py",
+      "source_location": "app.py:12",
+      "weight": 0.75,
+      "_src": "app_dashboard",
+      "_tgt": "app_reportes",
+      "source": "app_dashboard",
+      "target": "app_reportes"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:25",
+      "weight": 1.0,
+      "_src": "app_api_kpi",
+      "_tgt": "database_kpi_resumen",
+      "source": "app_api_kpi",
+      "target": "database_kpi_resumen"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:26",
+      "weight": 1.0,
+      "_src": "app_api_kpi",
+      "_tgt": "database_kpi_por_mes",
+      "source": "app_api_kpi",
+      "target": "database_kpi_por_mes"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:27",
+      "weight": 1.0,
+      "_src": "app_api_kpi",
+      "_tgt": "database_kpi_disponibilidad",
+      "source": "app_api_kpi",
+      "target": "database_kpi_disponibilidad"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:38",
+      "weight": 1.0,
+      "_src": "app_ordenes_lista",
+      "_tgt": "database_listar_os",
+      "source": "app_ordenes_lista",
+      "target": "database_listar_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:43",
+      "weight": 1.0,
+      "_src": "app_ordenes_lista",
+      "_tgt": "database_listar_equipos",
+      "source": "app_ordenes_lista",
+      "target": "database_listar_equipos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:53",
+      "weight": 1.0,
+      "_src": "app_ordenes_nueva",
+      "_tgt": "database_listar_equipos",
+      "source": "app_ordenes_nueva",
+      "target": "database_listar_equipos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:54",
+      "weight": 1.0,
+      "_src": "app_ordenes_nueva",
+      "_tgt": "database_listar_tecnicos",
+      "source": "app_ordenes_nueva",
+      "target": "database_listar_tecnicos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:57",
+      "weight": 1.0,
+      "_src": "app_ordenes_nueva",
+      "_tgt": "database_crear_os",
+      "source": "app_ordenes_nueva",
+      "target": "database_crear_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:64",
+      "weight": 1.0,
+      "_src": "app_ordenes_detalle",
+      "_tgt": "database_get_os",
+      "source": "app_ordenes_detalle",
+      "target": "database_get_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:68",
+      "weight": 1.0,
+      "_src": "app_ordenes_detalle",
+      "_tgt": "database_listar_tecnicos",
+      "source": "app_ordenes_detalle",
+      "target": "database_listar_tecnicos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:74",
+      "weight": 1.0,
+      "_src": "app_ordenes_editar",
+      "_tgt": "database_actualizar_os",
+      "source": "app_ordenes_editar",
+      "target": "database_actualizar_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:82",
+      "weight": 1.0,
+      "_src": "app_equipos_lista",
+      "_tgt": "database_listar_equipos",
+      "source": "app_equipos_lista",
+      "target": "database_listar_equipos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:90",
+      "weight": 1.0,
+      "_src": "app_equipos_nuevo",
+      "_tgt": "database_crear_equipo",
+      "source": "app_equipos_nuevo",
+      "target": "database_crear_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:99",
+      "weight": 1.0,
+      "_src": "app_equipos_editar",
+      "_tgt": "database_get_equipo",
+      "source": "app_equipos_editar",
+      "target": "database_get_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:105",
+      "weight": 1.0,
+      "_src": "app_equipos_editar",
+      "_tgt": "database_actualizar_equipo",
+      "source": "app_equipos_editar",
+      "target": "database_actualizar_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:114",
+      "weight": 1.0,
+      "_src": "app_tecnicos_lista",
+      "_tgt": "database_listar_tecnicos",
+      "source": "app_tecnicos_lista",
+      "target": "database_listar_tecnicos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:122",
+      "weight": 1.0,
+      "_src": "app_tecnicos_nuevo",
+      "_tgt": "database_crear_tecnico",
+      "source": "app_tecnicos_nuevo",
+      "target": "database_crear_tecnico"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:131",
+      "weight": 1.0,
+      "_src": "app_tecnicos_editar",
+      "_tgt": "database_listar_tecnicos",
+      "source": "app_tecnicos_editar",
+      "target": "database_listar_tecnicos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:138",
+      "weight": 1.0,
+      "_src": "app_tecnicos_editar",
+      "_tgt": "database_actualizar_tecnico",
+      "source": "app_tecnicos_editar",
+      "target": "database_actualizar_tecnico"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:147",
+      "weight": 1.0,
+      "_src": "app_reportes",
+      "_tgt": "database_kpi_resumen",
+      "source": "app_reportes",
+      "target": "database_kpi_resumen"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:148",
+      "weight": 1.0,
+      "_src": "app_reportes",
+      "_tgt": "database_kpi_por_mes",
+      "source": "app_reportes",
+      "target": "database_kpi_por_mes"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app.py",
+      "source_location": "app.py:149",
+      "weight": 1.0,
+      "_src": "app_reportes",
+      "_tgt": "database_kpi_disponibilidad",
+      "source": "app_reportes",
+      "target": "database_kpi_disponibilidad"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:15",
+      "weight": 1.0,
+      "_src": "database_init_db",
+      "_tgt": "database_get_db",
+      "source": "database_init_db",
+      "target": "database_get_db"
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "templates/ordenes/detalle.html",
-      "source_location": "line 111",
+      "source_file": "database.py",
+      "source_location": "database.py:19",
       "weight": 1.0,
-      "_src": "ordenes_detalle_template",
-      "_tgt": "concept_tecnico",
-      "source": "ordenes_detalle_template",
-      "target": "concept_tecnico"
+      "_src": "database_init_db",
+      "_tgt": "database_tabla_equipos",
+      "source": "database_init_db",
+      "target": "database_tabla_equipos"
     },
     {
-      "relation": "implements",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/base.html",
-      "weight": 0.85,
-      "_src": "base_kpi_card",
-      "_tgt": "dashboard_kpi_data",
-      "source": "base_kpi_card",
-      "target": "dashboard_kpi_data"
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:30",
+      "weight": 1.0,
+      "_src": "database_init_db",
+      "_tgt": "database_tabla_tecnicos",
+      "source": "database_init_db",
+      "target": "database_tabla_tecnicos"
     },
     {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": "templates/base.html",
-      "weight": 0.75,
-      "_src": "base_badge_estado",
-      "_tgt": "concept_orden_servicio",
-      "source": "base_badge_estado",
-      "target": "concept_orden_servicio"
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:39",
+      "weight": 1.0,
+      "_src": "database_init_db",
+      "_tgt": "database_tabla_ordenes_servicio",
+      "source": "database_init_db",
+      "target": "database_tabla_ordenes_servicio"
     },
     {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.9,
-      "source_file": "templates/dashboard.html",
-      "weight": 0.9,
-      "_src": "dashboard_kpi_data",
-      "_tgt": "concept_kpi",
-      "source": "dashboard_kpi_data",
-      "target": "concept_kpi"
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:58",
+      "weight": 1.0,
+      "_src": "database_init_db",
+      "_tgt": "database_tabla_historial_estados",
+      "source": "database_init_db",
+      "target": "database_tabla_historial_estados"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:131",
+      "weight": 1.0,
+      "_src": "database_kpi_resumen",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_kpi_resumen"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:169",
+      "weight": 1.0,
+      "_src": "database_kpi_por_mes",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_kpi_por_mes"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:183",
+      "weight": 1.0,
+      "_src": "database_kpi_disponibilidad",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_kpi_disponibilidad"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:205",
+      "weight": 1.0,
+      "_src": "database_listar_os",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_listar_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:225",
+      "weight": 1.0,
+      "_src": "database_get_os",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_get_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:238",
+      "weight": 1.0,
+      "_src": "database_crear_os",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_crear_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:262",
+      "weight": 1.0,
+      "_src": "database_actualizar_os",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_actualizar_os"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:302",
+      "weight": 1.0,
+      "_src": "database_listar_equipos",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_listar_equipos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:309",
+      "weight": 1.0,
+      "_src": "database_get_equipo",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_get_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:316",
+      "weight": 1.0,
+      "_src": "database_crear_equipo",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_crear_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:328",
+      "weight": 1.0,
+      "_src": "database_actualizar_equipo",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_actualizar_equipo"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:341",
+      "weight": 1.0,
+      "_src": "database_listar_tecnicos",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_listar_tecnicos"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:352",
+      "weight": 1.0,
+      "_src": "database_crear_tecnico",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_crear_tecnico"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:362",
+      "weight": 1.0,
+      "_src": "database_actualizar_tecnico",
+      "_tgt": "database_get_db",
+      "source": "database_get_db",
+      "target": "database_actualizar_tecnico"
     },
     {
       "relation": "semantically_similar_to",
       "confidence": "INFERRED",
-      "confidence_score": 0.9,
-      "source_file": "templates/dashboard.html",
-      "weight": 0.9,
-      "_src": "dashboard_chart_disp",
-      "_tgt": "reportes_chart_disp",
-      "source": "dashboard_chart_disp",
-      "target": "reportes_chart_disp"
-    },
-    {
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/dashboard.html",
-      "weight": 0.85,
-      "_src": "dashboard_chart_tipo",
-      "_tgt": "reportes_chart_tipo",
-      "source": "dashboard_chart_tipo",
-      "target": "reportes_chart_tipo"
+      "confidence_score": 0.7,
+      "source_file": "database.py",
+      "source_location": "database.py:130",
+      "weight": 0.7,
+      "_src": "database_kpi_resumen",
+      "_tgt": "database_kpi_por_mes",
+      "source": "database_kpi_resumen",
+      "target": "database_kpi_por_mes"
     },
     {
       "relation": "shares_data_with",
-      "confidence": "INFERRED",
-      "confidence_score": 0.9,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 34",
-      "weight": 0.9,
-      "_src": "concept_orden_servicio",
-      "_tgt": "concept_equipo",
-      "source": "concept_orden_servicio",
-      "target": "concept_equipo"
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:185",
+      "weight": 1.0,
+      "_src": "database_kpi_disponibilidad",
+      "_tgt": "database_tabla_equipos",
+      "source": "database_kpi_disponibilidad",
+      "target": "database_tabla_equipos"
     },
     {
       "relation": "shares_data_with",
-      "confidence": "INFERRED",
-      "confidence_score": 0.9,
-      "source_file": "templates/ordenes/nueva.html",
-      "source_location": "line 43",
-      "weight": 0.9,
-      "_src": "concept_orden_servicio",
-      "_tgt": "concept_tecnico",
-      "source": "concept_orden_servicio",
-      "target": "concept_tecnico"
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:187",
+      "weight": 1.0,
+      "_src": "database_kpi_disponibilidad",
+      "_tgt": "database_tabla_ordenes_servicio",
+      "source": "database_kpi_disponibilidad",
+      "target": "database_tabla_ordenes_servicio"
     },
     {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/reportes/indicadores.html",
-      "weight": 0.85,
-      "_src": "concept_mttr",
-      "_tgt": "concept_kpi",
-      "source": "concept_kpi",
-      "target": "concept_mttr"
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:206",
+      "weight": 1.0,
+      "_src": "database_listar_os",
+      "_tgt": "database_tabla_ordenes_servicio",
+      "source": "database_listar_os",
+      "target": "database_tabla_ordenes_servicio"
     },
     {
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/reportes/indicadores.html",
-      "weight": 0.85,
-      "_src": "concept_disponibilidad",
-      "_tgt": "concept_kpi",
-      "source": "concept_kpi",
-      "target": "concept_disponibilidad"
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:207",
+      "weight": 1.0,
+      "_src": "database_listar_os",
+      "_tgt": "database_tabla_equipos",
+      "source": "database_listar_os",
+      "target": "database_tabla_equipos"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:208",
+      "weight": 1.0,
+      "_src": "database_listar_os",
+      "_tgt": "database_tabla_tecnicos",
+      "source": "database_listar_os",
+      "target": "database_tabla_tecnicos"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:253",
+      "weight": 1.0,
+      "_src": "database_crear_os",
+      "_tgt": "database_tabla_historial_estados",
+      "source": "database_crear_os",
+      "target": "database_tabla_historial_estados"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py",
+      "source_location": "database.py:290",
+      "weight": 1.0,
+      "_src": "database_actualizar_os",
+      "_tgt": "database_tabla_historial_estados",
+      "source": "database_actualizar_os",
+      "target": "database_tabla_historial_estados"
     }
   ],
   "hyperedges": [
-    {
-      "id": "erp_maintenance_core_entities",
-      "label": "ERP Maintenance Core Entities: OS, Equipo, Tecnico",
-      "nodes": [
-        "concept_orden_servicio",
-        "concept_equipo",
-        "concept_tecnico"
-      ],
-      "relation": "participate_in",
-      "confidence": "INFERRED",
-      "confidence_score": 0.9,
-      "source_file": "templates/ordenes/nueva.html"
-    },
-    {
-      "id": "kpi_reporting_flow",
-      "label": "KPI Reporting Flow: Dashboard, Indicadores, MTTR, Disponibilidad",
-      "nodes": [
-        "dashboard_template",
-        "reportes_indicadores_template",
-        "concept_kpi",
-        "concept_mttr",
-        "concept_disponibilidad"
-      ],
-      "relation": "implement",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "templates/reportes/indicadores.html"
-    },
     {
       "id": "base_template_inheritance",
       "label": "All Templates Extend Base Template via Jinja2 Inheritance",
@@ -2373,6 +3503,77 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "templates/base.html"
+    },
+    {
+      "id": "kpi_reporting_flow",
+      "label": "KPI Reporting Flow: Dashboard, Indicadores, MTTR, Disponibilidad",
+      "nodes": [
+        "dashboard_template",
+        "reportes_indicadores_template",
+        "concept_kpi",
+        "concept_mttr",
+        "concept_disponibilidad"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "templates/reportes/indicadores.html"
+    },
+    {
+      "id": "erp_maintenance_core_entities",
+      "label": "ERP Maintenance Core Entities: OS, Equipo, Tecnico",
+      "nodes": [
+        "concept_orden_servicio",
+        "concept_equipo",
+        "concept_tecnico"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "templates/ordenes/nueva.html"
+    },
+    {
+      "id": "kpi_data_flow",
+      "label": "KPI Data Flow: Dashboard and Reportes consume KPI functions from database",
+      "nodes": [
+        "app_dashboard",
+        "app_reportes",
+        "database_kpi_resumen",
+        "database_kpi_por_mes",
+        "database_kpi_disponibilidad"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "app.py"
+    },
+    {
+      "id": "orden_servicio_crud_flow",
+      "label": "Service Order CRUD Flow: routes create/read/update orders via database layer recording history",
+      "nodes": [
+        "app_ordenes_nueva",
+        "database_crear_os",
+        "database_tabla_historial_estados"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "app.py"
+    },
+    {
+      "id": "db_schema_init",
+      "label": "Database Schema Initialization: init_db creates all four core tables",
+      "nodes": [
+        "database_init_db",
+        "database_tabla_equipos",
+        "database_tabla_tecnicos",
+        "database_tabla_ordenes_servicio",
+        "database_tabla_historial_estados"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "database.py"
     }
   ]
 }
