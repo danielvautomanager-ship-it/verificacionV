@@ -1,0 +1,19 @@
+{
+  "name": "calude-webbuilder",
+  "version": "1.0.0",
+  "description": "Build professional landing pages with Claude Code. Clone, run claude, answer questions, get a deployed website.",
+  "author": "Enrique Rocha (https://tododeia.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hainrixz/claude-webkit.git"
+  },
+  "keywords": [
+    "claude-code",
+    "web-builder",
+    "landing-page",
+    "nextjs",
+    "ai-assisted",
+    "tododeia"
+  ]
+}
