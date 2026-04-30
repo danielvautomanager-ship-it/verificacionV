@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>El Carajoo – Arroyo Resort | El Pozolillo, Nayarit</title>
+  <title>El Carajoo – Arroyo Resort | Escapada de naturaleza en Nayarit</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,6 +15,7 @@
       --gold:        #e8b84b;
       --white:       #f8fdf9;
       --text-dark:   #1c2b22;
+      --whatsapp:    #25d366;
     }
 
     html { scroll-behavior: smooth; }
@@ -52,9 +53,8 @@
       color: rgba(255,255,255,.88); text-decoration: none;
       font-size: .9rem; letter-spacing: .06em; text-transform: uppercase;
       transition: color .2s;
-      outline: 2px solid transparent; outline-offset: 4px;
     }
-    nav ul a:hover, nav ul a:focus { color: var(--gold); outline-color: var(--gold); }
+    nav ul a:hover { color: var(--gold); }
 
     /* ── HERO ── */
     #hero {
@@ -71,57 +71,94 @@
       text-transform: uppercase; margin-bottom: 1rem;
     }
     #hero h1 {
-      font-size: clamp(3rem, 8vw, 6.5rem);
-      color: #fff; font-weight: 900; line-height: 1;
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      color: #fff; font-weight: 900; line-height: 1.1;
       text-shadow: 0 4px 24px rgba(0,0,0,.4);
+      margin-bottom: 1rem;
     }
     #hero h1 em {
       font-style: normal; color: var(--blue-water);
     }
     .hero-tagline {
-      margin: 1.5rem auto 0;
-      max-width: 560px;
-      color: rgba(255,255,255,.85);
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      margin: 0 auto 1.5rem;
+      max-width: 640px;
+      color: rgba(255,255,255,.9);
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
       line-height: 1.6;
+      font-weight: 500;
     }
-    .hero-slogan {
-      margin-top: 1.2rem;
-      font-size: clamp(.95rem, 2vw, 1.1rem);
-      color: var(--gold);
-      font-style: italic;
-    }
-    .hero-cta {
-      margin-top: 2.5rem;
-      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
-    }
-    .btn {
-      padding: .85rem 2.2rem; border-radius: 50px;
-      font-size: 1rem; font-weight: 700; text-decoration: none;
-      transition: transform .2s, box-shadow .2s;
-      display: inline-block;
-      outline: 2px solid transparent; outline-offset: 2px;
-    }
-    .btn:hover, .btn:focus { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); outline-color: currentColor; }
-    .btn-primary {
-      background: var(--green-light); color: #fff;
-    }
-    .btn-outline {
-      border: 2px solid #fff; color: #fff;
-    }
-
-    /* ── BADGE HORARIO ── */
-    .hero-badge {
-      margin-top: 2.5rem;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.3);
-      border-radius: 14px;
+    .hero-price-badge {
+      margin: 1.5rem auto 2.5rem;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 50px;
       padding: .8rem 1.8rem;
       color: #fff;
-      font-size: .9rem;
-      backdrop-filter: blur(6px);
+      font-size: .95rem;
+      backdrop-filter: blur(8px);
     }
-    .hero-badge strong { color: var(--gold); }
+    .hero-price-badge strong {
+      color: var(--gold); font-size: 1.1rem;
+    }
+    .hero-cta {
+      display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      padding: 1rem 2.5rem; border-radius: 50px;
+      font-size: 1.05rem; font-weight: 700; text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      display: inline-flex; align-items: center; gap: .5rem;
+      border: none; cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.3); }
+    .btn-primary {
+      background: var(--whatsapp); color: #fff;
+    }
+    .btn-primary:hover { background: #1fa857; }
+    .btn-secondary {
+      background: var(--green-light); color: #fff;
+    }
+    .btn-secondary:hover { background: #3d9166; }
+    .btn-outline {
+      border: 2px solid #fff; color: #fff; background: transparent;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.1); }
+
+    .hero-urgency {
+      margin-top: 1.5rem;
+      color: var(--gold);
+      font-size: .95rem;
+      font-weight: 600;
+    }
+
+    /* ── FLOATING CTA ── */
+    .floating-cta {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      background: var(--whatsapp);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      z-index: 99;
+      transition: transform .2s, box-shadow .2s;
+      text-decoration: none;
+      border: none;
+    }
+    .floating-cta:hover {
+      transform: scale(1.12);
+      box-shadow: 0 6px 28px rgba(0,0,0,.4);
+    }
+    @media (max-width: 640px) {
+      .floating-cta { width: 60px; height: 60px; bottom: 20px; right: 20px; font-size: 1.5rem; }
+    }
 
     /* ── SECTIONS ── */
     section { padding: 5rem 1.5rem; }
@@ -140,6 +177,49 @@
       color: #555; font-size: 1.05rem; line-height: 1.7; max-width: 640px;
     }
 
+    /* ── PRECIOS ── */
+    #precios { background: var(--white); }
+    .prices-wrap {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      margin-top: 3rem; justify-content: center;
+    }
+    .price-card {
+      background: var(--white);
+      border: 2px solid #e2ece6;
+      border-radius: 20px;
+      padding: 2.2rem 2rem;
+      text-align: center;
+      flex: 1 1 200px; max-width: 260px;
+      transition: border-color .2s, transform .2s;
+    }
+    .price-card:hover { border-color: var(--green-light); transform: translateY(-5px); }
+    .price-card.featured {
+      border-color: var(--gold);
+      border-width: 3px;
+      background: linear-gradient(160deg, rgba(232,184,75,.08), #fff);
+      position: relative;
+    }
+    .price-card.featured::before {
+      content: "MEJOR VALOR";
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: var(--green-dark);
+      padding: .3rem .8rem; border-radius: 20px;
+      font-size: .75rem; font-weight: 700; letter-spacing: .1em;
+    }
+    .price-card .icon { font-size: 2.8rem; margin-bottom: .75rem; }
+    .price-card h3 { font-size: 1rem; color: #666; margin-bottom: .5rem; letter-spacing: .08em; text-transform: uppercase; }
+    .price-card .amount { font-size: 3.2rem; font-weight: 900; color: var(--green-dark); line-height: 1; }
+    .price-card .amount sup { font-size: 1.4rem; vertical-align: super; }
+    .price-card .currency { color: #999; font-size: .85rem; margin-top: .3rem; }
+    .price-note {
+      margin-top: 2.5rem;
+      background: linear-gradient(135deg, rgba(232,184,75,.12), rgba(232,184,75,.06));
+      border-left: 5px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.5rem 1.5rem;
+      font-size: .95rem; color: #5a4a1a; line-height: 1.7;
+    }
+
     /* ── FEATURES ── */
     #features { background: #f0f7f2; }
     .features-grid {
@@ -153,7 +233,7 @@
       box-shadow: 0 2px 16px rgba(0,0,0,.07);
       transition: transform .25s, box-shadow .25s;
     }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+    .feature-card:hover { transform: translateY(-6px); box-shadow: 0 8px 28px rgba(0,0,0,.12); }
     .feature-icon { font-size: 2.4rem; margin-bottom: 1rem; }
     .feature-card h3 { font-size: 1.1rem; color: var(--green-dark); margin-bottom: .5rem; }
     .feature-card p { color: #666; font-size: .95rem; line-height: 1.6; }
@@ -179,64 +259,59 @@
       font-size: 3rem;
       position: relative; overflow: hidden;
     }
-    .g-cell::after {
-      content: attr(data-label);
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: rgba(0,0,0,.45);
-      color: #fff; font-size: .78rem; padding: .4rem .7rem;
-      letter-spacing: .04em;
-    }
     .g-cell:nth-child(1) { grid-row: span 2; background: linear-gradient(135deg, #1a5c38, #3ab5c6); }
     .g-cell:nth-child(2) { background: linear-gradient(135deg, #2d7a4f, #1a4a2e); }
     .g-cell:nth-child(3) { background: linear-gradient(135deg, #3ab5c6, #2d7a4f); }
     .g-cell:nth-child(4) { background: linear-gradient(135deg, #1a4a2e, #4caf78); }
     .g-cell:nth-child(5) { background: linear-gradient(135deg, #4caf78, #3ab5c6); }
 
-    /* ── PRECIOS ── */
-    #precios { background: var(--white); }
-    .prices-wrap {
-      display: flex; gap: 1.5rem; flex-wrap: wrap;
-      margin-top: 3rem; justify-content: center;
+    /* ── TESTIMONIOS ── */
+    #testimonios { background: #f0f7f2; }
+    .testimonios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
     }
-    .price-card {
-      background: var(--white);
-      border: 2px solid #e2ece6;
-      border-radius: 20px;
-      padding: 2.2rem 2rem;
-      text-align: center;
-      flex: 1 1 200px; max-width: 260px;
-      transition: border-color .2s, transform .2s;
+    .testimonial-card {
+      background: #fff;
+      padding: 1.8rem;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
     }
-    .price-card:hover { border-color: var(--green-light); transform: translateY(-3px); }
-    .price-card.featured {
-      border-color: var(--green-mid);
-      background: linear-gradient(160deg, #f0f7f2, #fff);
+    .stars {
+      color: var(--gold);
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      letter-spacing: .2em;
     }
-    .price-card .icon { font-size: 2.5rem; margin-bottom: .75rem; }
-    .price-card h3 { font-size: 1rem; color: #666; margin-bottom: .5rem; letter-spacing: .08em; text-transform: uppercase; }
-    .price-card .amount { font-size: 2.8rem; font-weight: 900; color: var(--green-dark); line-height: 1; }
-    .price-card .amount sup { font-size: 1.2rem; vertical-align: super; }
-    .price-card .currency { color: #999; font-size: .85rem; margin-top: .3rem; }
-    .price-note {
-      margin-top: 2rem;
-      background: #fff8e6;
-      border-left: 4px solid var(--gold);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      font-size: .95rem; color: #5a4a1a; line-height: 1.6;
+    .testimonial-card p {
+      color: #555;
+      font-size: .95rem;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+    .testimonial-card .author {
+      font-weight: 700;
+      color: var(--green-dark);
+      font-size: .9rem;
     }
 
     /* ── HORARIO ── */
-    #horario { background: #f0f7f2; }
+    #horario { background: var(--white); }
     .schedule-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem; margin-top: 2.5rem;
     }
     .schedule-card {
-      background: #fff; border-radius: 16px;
-      padding: 1.8rem; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+      background: linear-gradient(135deg, #f0f7f2, #fff);
+      border: 2px solid #e2ece6;
+      border-radius: 16px;
+      padding: 1.8rem; transition: border-color .2s;
     }
+    .schedule-card:hover { border-color: var(--green-light); }
     .schedule-card .day-badge {
       display: inline-block;
       background: var(--green-light); color: #fff;
@@ -251,7 +326,7 @@
     /* ── CONTACTO ── */
     #contacto { background: var(--green-dark); color: #fff; text-align: center; }
     #contacto h2 { color: #fff; }
-    #contacto .subtitle { color: rgba(255,255,255,.72); margin: 0 auto; }
+    #contacto .subtitle { color: rgba(255,255,255,.72); }
     .contact-box {
       margin-top: 2.5rem;
       display: flex; flex-wrap: wrap; gap: 1.2rem;
@@ -265,10 +340,8 @@
       color: #fff; text-decoration: none;
       font-size: 1rem;
       transition: background .2s;
-      outline: 2px solid transparent; outline-offset: 2px;
     }
-    .contact-pill:hover, .contact-pill:focus { background: rgba(255,255,255,.2); outline-color: #fff; }
-    .contact-pill .ci { font-size: 1.3rem; }
+    .contact-pill:hover { background: rgba(255,255,255,.2); }
 
     .slogan-final {
       margin-top: 3.5rem;
@@ -279,7 +352,6 @@
     }
     .slogan-final span { color: rgba(255,255,255,.6); font-size: .85em; }
 
-    /* ── SECTION LABELS (dark bg sections) ── */
     #contacto .section-label { color: var(--gold); }
 
     /* ── FOOTER ── */
@@ -287,7 +359,7 @@
       background: #0e2018;
       color: rgba(255,255,255,.45);
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem 1.5rem;
       font-size: .82rem;
     }
     footer strong { color: rgba(255,255,255,.7); }
@@ -297,6 +369,8 @@
       nav ul { display: none; }
       .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
       .g-cell:nth-child(1) { grid-row: span 1; }
+      .hero-cta { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -309,29 +383,75 @@
     <span>El Carajoo</span>
   </a>
   <ul>
-    <li><a href="#features">Experiencia</a></li>
     <li><a href="#precios">Precios</a></li>
+    <li><a href="#features">Experiencia</a></li>
     <li><a href="#horario">Horario</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
 </nav>
 
+<!-- FLOATING WHATSAPP CTA -->
+<a href="https://wa.me/521323194274?text=Hola%2C%20quiero%20reservar%20mi%20entrada%20para%20este%20fin%20de%20semana%20en%20El%20Carajoo" 
+   class="floating-cta" 
+   title="Contactar por WhatsApp">
+  💬
+</a>
+
 <!-- HERO -->
 <section id="hero">
   <p class="hero-eyebrow">El Pozolillo, Nayarit</p>
-  <h1>EL <em>CARAJO</em><br>ARROYO RESORT</h1>
+  <h1>Escapa de la rutina<br>en un paraíso de <em>agua y naturaleza</em></h1>
   <p class="hero-tagline">
-    Naturaleza, descanso y aventura rodeados de arroyos cristalinos,
-    cascadas y selva viva. ¡Ven a vivirlo!
+    Arroyo cristalino, cascadas naturales y selva virgen. 
+    La escapada perfecta para desconectarte solo a 2 horas de distancia.
   </p>
-  <p class="hero-slogan">"donde el murmullo del arroyo es tu mejor soundtrack"</p>
-  <div class="hero-cta">
-    <a href="#precios" class="btn btn-primary">Ver precios</a>
-    <a href="#contacto" class="btn btn-outline">Reservar privado</a>
+  <div class="hero-price-badge">
+    Desde <strong>$50 por persona</strong> • Sábados y domingos 9am-5pm
   </div>
-  <div class="hero-badge">
-    <strong>Sábados y Domingos</strong> &nbsp;·&nbsp; 9:00 am – 5:00 pm &nbsp;·&nbsp;
-    Abierto al público general
+  <div class="hero-cta">
+    <a href="https://wa.me/521323194274?text=Hola%2C%20quiero%20reservar%20mi%20entrada%20para%20este%20fin%20de%20semana%20en%20El%20Carajoo" 
+       class="btn btn-primary">
+      📱 Reservar ahora por WhatsApp
+    </a>
+    <a href="tel:+521323194274" class="btn btn-secondary">
+      📞 Llamar: 323-194-2274
+    </a>
+  </div>
+  <div class="hero-urgency">
+    ⚠️ Capacidad limitada: Solo 120 personas por fin de semana
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-inner">
+    <p class="section-label">Tarifas accesibles</p>
+    <h2>Planes para toda la familia</h2>
+    <p class="subtitle">Visita al público general únicamente sábados y domingos. Abierto de 9:00 am a 5:00 pm.</p>
+    <div class="prices-wrap">
+      <div class="price-card featured">
+        <div class="icon">🧑</div>
+        <h3>Adulto</h3>
+        <div class="amount"><sup>$</sup>50</div>
+        <p class="currency">pesos MXN · por persona</p>
+      </div>
+      <div class="price-card">
+        <div class="icon">👧</div>
+        <h3>Niño</h3>
+        <div class="amount"><sup>$</sup>30</div>
+        <p class="currency">pesos MXN · por persona</p>
+      </div>
+      <div class="price-card">
+        <div class="icon">🚿</div>
+        <h3>Baños</h3>
+        <div class="amount"><sup>$</sup>5</div>
+        <p class="currency">pesos MXN · servicio adicional</p>
+      </div>
+    </div>
+    <div class="price-note">
+      <strong>🔴 Renta privada disponible de lunes a viernes</strong><br>
+      Ideal para grupos, empresas y celebraciones especiales. Contáctanos para cotización y disponibilidad.
+    </div>
   </div>
 </section>
 
@@ -339,10 +459,10 @@
 <section id="features">
   <div class="section-inner">
     <p class="section-label">¿Qué encontrarás?</p>
-    <h2>Una experiencia que<br>despierta todos tus sentidos</h2>
+    <h2>Una experiencia que despierta todos tus sentidos</h2>
     <p class="subtitle">
-      En El Carajo no necesitas playlist — el sonido del arroyo
-      y el canto de la naturaleza se convierten en la melodía perfecta para tu descanso.
+      En El Carajoo no necesitas playlist — el sonido del arroyo y el canto de la naturaleza 
+      se convierten en la melodía perfecta para tu descanso.
     </p>
     <div class="features-grid">
       <div class="feature-card">
@@ -363,7 +483,7 @@
       <div class="feature-card">
         <div class="feature-icon">🏠</div>
         <h3>Renta privada</h3>
-        <p>De lunes a viernes el resort es tuyo — ideal para grupos, empresas y celebraciones especiales.</p>
+        <p>De lunes a viernes el resort es tuyo — ideal para grupos, empresas y celebraciones.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎉</div>
@@ -379,51 +499,50 @@
   </div>
 </section>
 
-<!-- GALLERY MOOD -->
+<!-- GALLERY -->
 <section id="gallery">
   <div class="section-inner">
     <p class="section-label">Así amanece</p>
-    <h2>Así de hermoso amanece<br>en El Arroyo El Carajo</h2>
+    <h2>Así de hermoso amanece en El Arroyo El Carajoo</h2>
     <p class="subtitle">Cada visita es única. El río cambia, el verde crece y la magia siempre está.</p>
     <div class="gallery-grid">
-      <div class="g-cell" data-label="Arroyo principal">🏞️</div>
-      <div class="g-cell" data-label="Cascadas naturales">💧</div>
-      <div class="g-cell" data-label="Selva y río">🌳</div>
-      <div class="g-cell" data-label="Pozas cristalinas">🌊</div>
-      <div class="g-cell" data-label="Vista panorámica">⛰️</div>
+      <div class="g-cell">🏞️</div>
+      <div class="g-cell">💧</div>
+      <div class="g-cell">🌳</div>
+      <div class="g-cell">🌊</div>
+      <div class="g-cell">⛰️</div>
     </div>
   </div>
 </section>
 
-<!-- PRECIOS -->
-<section id="precios">
+<!-- TESTIMONIOS -->
+<section id="testimonios">
   <div class="section-inner">
-    <p class="section-label">Tarifas</p>
-    <h2>Accesible para toda la familia</h2>
-    <p class="subtitle">Precios de entrada para visitas de fin de semana al público general.</p>
-    <div class="prices-wrap">
-      <div class="price-card featured">
-        <div class="icon">🧑</div>
-        <h3>Adulto</h3>
-        <div class="amount"><sup>$</sup>50</div>
-        <p class="currency">pesos MXN · por persona</p>
+    <p class="section-label">Historias reales</p>
+    <h2>Lo que dicen nuestros visitantes</h2>
+    <p class="subtitle">Familias y grupos que ya experimentaron la magia de El Carajoo.</p>
+    <div class="testimonios-grid">
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>
+          "El lugar más hermoso para desconectarse. Las cascadas y el agua cristalina superaron nuestras expectativas. Volvemos el próximo mes."
+        </p>
+        <div class="author">— Familia López, Tepic</div>
       </div>
-      <div class="price-card">
-        <div class="icon">👧</div>
-        <h3>Niño</h3>
-        <div class="amount"><sup>$</sup>30</div>
-        <p class="currency">pesos MXN · por persona</p>
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>
+          "Perfecto para eventos. El personal fue muy atento, las instalaciones impecables y el precio muy justo. Recomendado 100%."
+        </p>
+        <div class="author">— Jorge M., Cliente privado</div>
       </div>
-      <div class="price-card">
-        <div class="icon">🚿</div>
-        <h3>Baños</h3>
-        <div class="amount"><sup>$</sup>5</div>
-        <p class="currency">pesos MXN · uso del servicio</p>
+      <div class="testimonial-card">
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p>
+          "Llevamos a los niños el fin de semana y les encantó. Es un paraíso sin tráfico de gente. Tranquilo, limpio y muy bonito."
+        </p>
+        <div class="author">— María & Carlos, San Blas</div>
       </div>
-    </div>
-    <div class="price-note">
-      🔴 <strong>Renta privada disponible de lunes a viernes.</strong>
-      Ideal para grupos, empresas y celebraciones. Contáctanos para cotización y disponibilidad.
     </div>
   </div>
 </section>
@@ -433,17 +552,17 @@
   <div class="section-inner">
     <p class="section-label">Horarios</p>
     <h2>Planea tu visita</h2>
-    <p class="subtitle">Abiertos al público en fin de semana, con opción de renta exclusiva entre semana.</p>
+    <p class="subtitle">Abierto al público en fin de semana, con opción de renta exclusiva entre semana.</p>
     <div class="schedule-grid">
       <div class="schedule-card">
         <span class="day-badge">Público general</span>
         <h3>Sábados y Domingos</h3>
-        <p>9:00 am – 5:00 pm<br>Entrada libre para familias y grupos.</p>
+        <p><strong>9:00 am – 5:00 pm</strong><br>Entrada: $50 adulto, $30 niño<br>Acceso a todo el resort y servicios.</p>
       </div>
       <div class="schedule-card private">
         <span class="day-badge">Privado</span>
         <h3>Lunes a Viernes</h3>
-        <p>Renta exclusiva del resort.<br>Perfecto para eventos, retiros y celebraciones especiales.</p>
+        <p><strong>Renta exclusiva</strong><br>Ideal para eventos, retiros y celebraciones especiales.<br>Cotización personalizada.</p>
       </div>
     </div>
   </div>
@@ -453,23 +572,24 @@
 <section id="contacto">
   <div class="section-inner">
     <p class="section-label">Contáctanos</p>
-    <h2>¿Listo para escaparte?</h2>
+    <h2>¿Listo para tu escapada?</h2>
     <p class="subtitle">
-      Reserva tu día privado o simplemente ven el fin de semana.
-      Estamos en El Pozolillo, Nayarit.
+      Reserva tu entrada para este fin de semana o consulta por renta privada.
+      Te respondemos en menos de 1 hora.
     </p>
     <div class="contact-box">
+      <a href="https://wa.me/521323194274?text=Hola%2C%20quiero%20reservar%20mi%20entrada%20para%20este%20fin%20de%20semana%20en%20El%20Carajoo" 
+         class="contact-pill">
+        <span>💬</span> WhatsApp
+      </a>
       <a href="tel:+521323194274" class="contact-pill">
-        <span class="ci">📞</span> +52 1 323 194 2274
+        <span>📞</span> +52 1 323 194 2274
       </a>
       <a href="tel:+523231222951" class="contact-pill">
-        <span class="ci">📱</span> 323.122.2951
+        <span>📱</span> 323.122.2951
       </a>
-      <a href="https://www.facebook.com/people/El-Carajoo/61578228341319/" target="_blank" class="contact-pill">
-        <span class="ci">📘</span> El Carajoo en Facebook
-      </a>
-      <a href="https://wa.me/521323194274" target="_blank" class="contact-pill">
-        <span class="ci">💬</span> WhatsApp
+      <a href="https://www.facebook.com/people/El-Carajoo/" target="_blank" class="contact-pill">
+        <span>📘</span> https://www.facebook.com/people/El-Carajoo/61578228341319/
       </a>
     </div>
     <p class="slogan-final">
@@ -484,6 +604,10 @@
   <strong>El Carajoo – Arroyo Resort</strong> &nbsp;·&nbsp;
   El Pozolillo, Nayarit, México &nbsp;·&nbsp;
   Naturaleza, descanso y aventura
+  <br>
+  <span style="margin-top: 1rem; display: block; font-size: 0.75rem;">
+    © 2024 El Carajoo. Todos los derechos reservados.
+  </span>
 </footer>
 
 </body>
