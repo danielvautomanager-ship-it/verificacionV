@@ -1,0 +1,16 @@
+# .graphifyignore — sintaxis idéntica a .gitignore
+node_modules/
+.next/
+dist/
+build/
+.venv/
+vendor/
+*.generated.ts
+docs/translations/
+public/assets/
+# Preserved from previous config
+graphify-out/
+__pycache__/
+*.pyc
+.git/
+static/
