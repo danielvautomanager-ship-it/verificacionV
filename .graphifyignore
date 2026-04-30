@@ -1,22 +1,16 @@
-# Dependencies
+# .graphifyignore — sintaxis idéntica a .gitignore
 node_modules/
-venv/
-.venv/
-
-# Build outputs
 .next/
 dist/
 build/
+.venv/
+vendor/
+*.generated.ts
+docs/translations/
+public/assets/
+# Preserved from previous config
 graphify-out/
-
-# Python
 __pycache__/
 *.pyc
-.pytest_cache/
-.mypy_cache/
-
-# Version control
 .git/
-
-# Static files
 static/
