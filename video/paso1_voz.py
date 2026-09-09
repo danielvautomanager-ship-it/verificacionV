@@ -27,6 +27,7 @@ from piper import PiperVoice, SynthesisConfig
 RAIZ = Path(__file__).resolve().parent
 SILENCIO_INICIAL = 0.9   # segundos de aire antes de la primera frase
 MAX_CARACTERES_SUBTITULO = 64   # un subtítulo más largo que esto se parte en dos
+MIN_CARACTERES_SUBTITULO = 26   # y uno más corto que esto se junta con el anterior
 
 
 def sintetizar(voz, texto, syn):
@@ -63,7 +64,17 @@ def partir_en_subtitulos(texto):
             trozo = trozo[corte:].strip()
         if trozo:
             finales.append(trozo)
-    return finales
+
+    # Un subtítulo de una sola palabra se ve mal (aparece y desaparece en menos de
+    # un segundo): lo juntamos con el trozo anterior siempre que quepa.
+    compactos = []
+    for trozo in finales:
+        if (compactos and (len(trozo) < MIN_CARACTERES_SUBTITULO or len(compactos[-1]) < MIN_CARACTERES_SUBTITULO)
+                and len(compactos[-1]) + 1 + len(trozo) <= MAX_CARACTERES_SUBTITULO + 20):
+            compactos[-1] += " " + trozo
+        else:
+            compactos.append(trozo)
+    return compactos
 
 
 def repartir_tiempo(trozos, inicio, fin):
