@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Set de grabación · Administra el dinero de tu negocio</title>
+<link rel="stylesheet" href="assets/fonts/fuentes.css">
+<style>
+/* ------------------------------------------------------------------
+   ESTE ARCHIVO ES EL "SET DE GRABACIÓN".
+   Playwright lo abre, llama a seek(segundo) y toma una foto. Por eso NO hay
+   transiciones ni animaciones de CSS: todo el movimiento se calcula en el
+   script a partir del segundo actual. Así cada fotograma sale siempre igual.
+   Puedes abrirlo tú mismo con ?ui=1 para mover la barra y ver cualquier segundo.
+------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0;
+  transition: none !important; animation: none !important; }
+
+:root{
+  --crema:#F7F0E4; --crema-2:#EFE3D0; --papel:#FFFBF4;
+  --tinta:#2B2018; --tinta-suave:#7A6656;
+  --ambar:#E3A03C; --terracota:#C4562F; --verde:#4E7C59; --verde-claro:#9CC0A4;
+  --rojo:#B23A2B; --azul:#3E6B8A;
+  --sombra: 0 18px 50px rgba(43,32,24,.14), 0 3px 10px rgba(43,32,24,.08);
+}
+
+html,body{ width:1920px; height:1080px; overflow:hidden; background:#000; }
+body{ font-family:'Inter',system-ui,sans-serif; color:var(--tinta); }
+
+#pelicula{ position:relative; width:1920px; height:1080px; overflow:hidden;
+  background: radial-gradient(120% 100% at 20% 10%, #FDF7EC 0%, var(--crema) 45%, var(--crema-2) 100%); }
+
+/* --- capas de acabado: grano de película + viñeta (look documental) --- */
+#grano{ position:absolute; inset:-50px; pointer-events:none; opacity:.14; mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='r'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='220' height='220' filter='url(%23r)' opacity='.55'/></svg>"); }
+#vineta{ position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(75% 65% at 50% 45%, transparent 55%, rgba(60,40,25,.20) 100%); }
+#calido{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:soft-light;
+  background: linear-gradient(115deg, rgba(255,196,120,.35), transparent 45%, rgba(120,70,30,.20)); }
+
+/* --- escenario --- */
+#escenario{ position:absolute; inset:0; }
+.escena{ position:absolute; inset:0; display:none; will-change:opacity,transform; }
+.escena .lienzo{ position:absolute; inset:0; transform-origin:50% 45%; }
+.contenido{ position:absolute; left:130px; right:130px; top:120px; bottom:270px; }
+
+/* --- elementos de marca --- */
+#marca{ position:absolute; left:130px; top:64px; display:flex; align-items:center; gap:14px;
+  font-size:19px; letter-spacing:.16em; text-transform:uppercase; color:var(--tinta-suave); font-weight:600; }
+#marca .punto{ width:13px; height:13px; border-radius:50%; background:var(--terracota); }
+#capitulo{ position:absolute; right:130px; top:60px; font-size:20px; font-weight:600;
+  color:var(--tinta-suave); letter-spacing:.04em; }
+#barra-progreso{ position:absolute; left:0; bottom:0; height:6px; background:rgba(43,32,24,.10); width:100%; }
+#barra-progreso i{ position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg,var(--ambar),var(--terracota)); width:0; }
+
+/* --- subtítulos --- */
+#subtitulo{ position:absolute; left:50%; bottom:96px; transform:translateX(-50%);
+  max-width:1500px; padding:26px 46px; border-radius:22px; text-align:center;
+  background:rgba(31,22,16,.86); color:#FFF6E9; font-size:42px; line-height:1.34; font-weight:500;
+  letter-spacing:-.005em; box-shadow:0 20px 50px rgba(31,22,16,.28); opacity:0; }
+
+/* --- tipografía de escena --- */
+.titulo{ font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:108px; line-height:1.02;
+  letter-spacing:-.02em; color:var(--tinta); }
+.titulo.medio{ font-size:84px; }
+.titulo.chico{ font-size:66px; }
+.lead{ font-size:38px; line-height:1.4; color:var(--tinta-suave); max-width:1100px; margin-top:28px; }
+.etiqueta{ display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:999px;
+  font-size:22px; font-weight:600; letter-spacing:.10em; text-transform:uppercase; }
+.etiqueta.error{ background:rgba(178,58,43,.12); color:var(--rojo); }
+.etiqueta.bien{ background:rgba(78,124,89,.14); color:var(--verde); }
+.etiqueta.neutra{ background:rgba(43,32,24,.08); color:var(--tinta-suave); }
+
+/* --- tarjetas --- */
+.tarjeta{ background:var(--papel); border-radius:28px; box-shadow:var(--sombra); padding:40px 42px;
+  border:1px solid rgba(43,32,24,.06); }
+.tarjeta h3{ font-family:'Fraunces',serif; font-size:44px; font-weight:600; line-height:1.1; margin-bottom:16px; }
+.tarjeta p{ font-size:28px; line-height:1.45; color:var(--tinta-suave); }
+.fila-tarjetas{ display:flex; gap:36px; align-items:stretch; }
+.fila-tarjetas .tarjeta{ flex:1; }
+.numero{ font-family:'Fraunces',serif; font-size:70px; font-weight:700; color:var(--ambar); line-height:1; margin-bottom:18px; }
+
+/* --- piezas ilustradas --- */
+.ilustracion{ position:absolute; inset:0; width:100%; height:100%; }
+.moneda{ position:absolute; width:54px; height:54px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #F6CE7A, var(--ambar) 60%, #B9822A);
+  box-shadow:0 6px 14px rgba(43,32,24,.22); display:grid; place-items:center;
+  font-weight:800; font-size:26px; color:#7A5314; }
+.hoja{ background:var(--papel); border-radius:20px; box-shadow:var(--sombra); overflow:hidden; }
+.hoja .cab{ background:#F0E6D6; padding:20px 30px; font-size:24px; font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--tinta-suave); display:flex; justify-content:space-between; }
+.hoja .reng{ display:flex; justify-content:space-between; padding:22px 30px; font-size:30px;
+  border-top:1px solid rgba(43,32,24,.08); }
+.hoja .reng b{ font-variant-numeric:tabular-nums; }
+.pos{ color:var(--verde); } .neg{ color:var(--rojo); }
+
+/* --- barra de control opcional (?ui=1) --- */
+#ui{ position:fixed; left:0; right:0; bottom:0; display:none; gap:16px; align-items:center;
+  padding:14px 24px; background:rgba(20,14,10,.92); color:#fff; font-size:16px; z-index:99; }
+#ui input{ flex:1; }
+</style>
+</head>
+<body>
+<div id="pelicula">
+  <div id="escenario"></div>
+  <div id="calido"></div>
+  <div id="grano"></div>
+  <div id="vineta"></div>
+  <div id="marca"><span class="punto"></span><span>Tu negocio en orden</span></div>
+  <div id="capitulo"></div>
+  <div id="subtitulo"></div>
+  <div id="barra-progreso"><i></i></div>
+</div>
+<div id="ui"><span id="ui-t">0.0s</span><input id="ui-rango" type="range" min="0" max="100" step="0.04" value="0"><span id="ui-esc"></span></div>
+
+<!-- ================= ESCENAS =================
+     data-in="1.2"    → el elemento entra 1.2 s después de que empieza la escena
+     data-linea="1"   → el elemento entra cuando empieza la 2ª frase de esa escena
+     data-y / data-x  → desde dónde entra (píxeles);  data-s → escala inicial
+============================================== -->
+
+<template data-escena="apertura">
+  <svg class="ilustracion" viewBox="0 0 1920 1080">
+    <g id="sol-rayos" opacity=".5">
+      <circle cx="250" cy="150" r="95" fill="#F6D08A"/>
+      <g stroke="#EFC271" stroke-width="10" stroke-linecap="round" opacity=".8">
+        <path d="M250 10 v-0"/><path d="M110 150 h-70"/><path d="M250 290 v70"/>
+        <path d="M390 150 h70"/><path d="M151 51 l-50 -50"/><path d="M349 51 l50 -50"/>
+        <path d="M151 249 l-50 50"/><path d="M349 249 l50 50"/>
+      </g>
+    </g>
+    <g opacity=".9">
+      <rect x="1130" y="330" width="680" height="500" rx="24" fill="#F2E4CE"/>
+      <rect x="1130" y="330" width="680" height="70" rx="16" fill="#C4562F"/>
+      <g fill="#E8A33D">
+        <rect x="1150" y="400" width="70" height="46" rx="8"/><rect x="1290" y="400" width="70" height="46" rx="8"/>
+        <rect x="1430" y="400" width="70" height="46" rx="8"/><rect x="1570" y="400" width="70" height="46" rx="8"/>
+        <rect x="1710" y="400" width="70" height="46" rx="8"/>
+      </g>
+      <rect x="1180" y="500" width="250" height="230" rx="14" fill="#FFFBF4"/>
+      <rect x="1210" y="540" width="90" height="60" rx="8" fill="#E7D9C2"/>
+      <rect x="1330" y="540" width="70" height="60" rx="8" fill="#E7D9C2"/>
+      <rect x="1210" y="630" width="190" height="60" rx="8" fill="#E7D9C2"/>
+      <rect x="1520" y="500" width="200" height="330" rx="12" fill="#B9805A"/>
+      <circle cx="1690" cy="670" r="10" fill="#F6E7C9"/>
+    </g>
+    <g id="letrero-abierto" transform="translate(1560,455)">
+      <rect x="-72" y="-30" width="144" height="60" rx="12" fill="#4E7C59"/>
+      <text x="0" y="10" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#F3FBF4">ABIERTO</text>
+    </g>
+    <g id="figura-narrador" transform="translate(1400,530) scale(0.85)">
+      <ellipse cx="0" cy="330" rx="150" ry="22" fill="rgba(43,32,24,.10)"/>
+      <path d="M-90 330 v-190 a90 90 0 0 1 180 0 v190 z" fill="#C4562F"/>
+      <rect x="-14" y="60" width="28" height="120" rx="14" fill="#A8482A"/>
+      <circle cx="0" cy="-10" r="72" fill="#E8B98F"/>
+      <path d="M-74 -30 a74 74 0 0 1 148 0 q-74 -46 -148 0z" fill="#3A2A20"/>
+    </g>
+  </svg>
+  <div class="contenido">
+    <div class="etiqueta neutra" data-in="0.3" data-y="18">Parte 2 · Administración del dinero</div>
+    <h1 class="titulo" data-in="0.7" data-y="34" style="margin-top:34px; max-width:1000px">Administra el dinero<br>de tu negocio</h1>
+    <p class="lead" data-in="1.3" data-y="24">Flujo de efectivo, errores comunes<br>y tu primer presupuesto.</p>
+  </div>
+</template>
+
+<template data-escena="flujo">
+  <div class="contenido">
+    <h2 class="titulo medio" data-in="0.2" data-y="26" style="max-width:1200px">No fracasan por falta de ideas.<br>Se quedan sin <em style="color:var(--terracota); font-style:normal">flujo de efectivo</em>.</h2>
+    <div id="flujo-comparativa" style="position:absolute; left:0; right:0; top:330px; display:flex; gap:60px; align-items:flex-end">
+      <div style="flex:1">
+        <div class="tarjeta" data-in="1.4" data-y="30" style="padding:34px 38px">
+          <p style="font-size:26px; letter-spacing:.10em; text-transform:uppercase; font-weight:700">Volumen de ventas</p>
+          <div style="height:150px; display:flex; align-items:flex-end; gap:18px; margin-top:26px">
+            <i class="barra-v" style="flex:1; background:var(--ambar); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-v" style="flex:1; background:var(--ambar); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-v" style="flex:1; background:var(--ambar); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-v" style="flex:1; background:var(--ambar); border-radius:10px 10px 0 0; display:block"></i>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1">
+        <div class="tarjeta" data-in="1.9" data-y="30" style="padding:34px 38px">
+          <p style="font-size:26px; letter-spacing:.10em; text-transform:uppercase; font-weight:700">Utilidades reales</p>
+          <div style="height:150px; display:flex; align-items:flex-end; gap:18px; margin-top:26px">
+            <i class="barra-u" style="flex:1; background:var(--verde-claro); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-u" style="flex:1; background:var(--verde-claro); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-u" style="flex:1; background:var(--verde-claro); border-radius:10px 10px 0 0; display:block"></i>
+            <i class="barra-u" style="flex:1; background:var(--verde-claro); border-radius:10px 10px 0 0; display:block"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="etiqueta error" data-in="2.6" data-y="16" style="position:absolute; left:50%; transform:translateX(-50%); top:648px">Vender mucho no es ganar</div>
+  </div>
+</template>
+
+<template data-escena="agenda">
+  <div class="contenido">
+    <h2 class="titulo chico" data-in="0.2" data-y="22">Hoy vamos a ver:</h2>
+    <div class="fila-tarjetas" style="margin-top:60px">
+      <div class="tarjeta" data-in="0.9" data-y="40"><div class="numero">01</div><h3>Qué es una administración sana</h3><p>De dónde viene y a dónde va cada peso.</p></div>
+      <div class="tarjeta" data-in="1.6" data-y="40"><div class="numero">02</div><h3>Qué malas prácticas evitar</h3><p>Los tres errores más caros al empezar.</p></div>
+      <div class="tarjeta" data-in="2.3" data-y="40"><div class="numero">03</div><h3>Cómo poner orden hoy</h3><p>Tu primer presupuesto, paso a paso.</p></div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="pregunta">
+  <div class="contenido" style="display:flex; flex-direction:column; justify-content:center">
+    <h2 class="titulo" data-in="0.2" data-y="30" style="max-width:1400px">¿Por qué administrar tu dinero <span style="color:var(--terracota)">desde el primer día</span>?</h2>
+    <svg width="620" height="30" style="margin-top:34px" viewBox="0 0 620 30">
+      <path id="subrayado" d="M6 20 C 160 4, 420 4, 614 16" stroke="var(--ambar)" stroke-width="10" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+</template>
+
+<template data-escena="definicion">
+  <div class="contenido">
+    <h2 class="titulo chico" data-in="0.2" data-y="22" style="max-width:1300px">Administrar es saber, con precisión:</h2>
+    <p class="lead" data-in="1.1" data-y="20" style="margin-top:20px">No es una tarea sólo para las grandes empresas.</p>
+    <div class="fila-tarjetas" style="margin-top:48px; align-items:center">
+      <div class="tarjeta" data-in="3.0" data-y="34" style="text-align:center"><div><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--terracota)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h13"/><path d="M12 8l4 4-4 4"/><circle cx="19.5" cy="12" r="2.5"/></svg></div><h3 style="margin-top:10px">¿De dónde viene?</h3><p>Cada recurso que entra al negocio.</p></div>
+      <div class="tarjeta" data-linea="1" data-desfase="1.0" data-y="34" style="text-align:center"><div><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--terracota)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16"/><path d="M16 5l4 4-4 4"/><path d="M20 15H4"/><path d="M8 11l-4 4 4 4"/></svg></div><h3 style="margin-top:10px">¿A dónde se destina?</h3><p>En qué se gasta realmente.</p></div>
+      <div class="tarjeta" data-linea="1" data-desfase="3.4" data-y="34" style="text-align:center"><div><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--terracota)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/></svg></div><h3 style="margin-top:10px">¿Qué beneficio aporta?</h3><p>Qué te devuelve ese gasto.</p></div>
+    </div>
+    <div class="etiqueta neutra" data-linea="1" data-desfase="5.6" data-y="16" style="position:absolute; left:50%; transform:translateX(-50%); top:596px">No es sólo para las grandes empresas</div>
+  </div>
+</template>
+
+<template data-escena="transicion-errores">
+  <div class="capa-oscura" style="position:absolute; inset:0; background:linear-gradient(140deg,#3A2A20,#241913)"></div>
+  <div class="contenido" style="display:flex; flex-direction:column; justify-content:center">
+    <div class="etiqueta error" data-in="0.2" data-y="18" style="background:rgba(226,120,90,.18); color:#F0A48C; align-self:flex-start">Errores comunes</div>
+    <h2 class="titulo" data-in="0.6" data-y="30" style="color:#FDF3E6; margin-top:30px; max-width:1400px">Tres hábitos que dañan tu negocio sin que te des cuenta</h2>
+    <div style="display:flex; gap:44px; margin-top:64px">
+      <div data-in="1.4" data-y="24" style="color:#E9C9A8; font-size:34px">01 · Mezclar el dinero</div>
+      <div data-in="1.9" data-y="24" style="color:#E9C9A8; font-size:34px">02 · Fuga no registrada</div>
+      <div data-in="2.4" data-y="24" style="color:#E9C9A8; font-size:34px">03 · Vanidad financiera</div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="error1">
+  <div class="contenido">
+    <div class="etiqueta error" data-in="0.2" data-y="16">Error 01 · Mezclar el dinero</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:26px; max-width:1250px">La caja del negocio no es tu cartera</h2>
+    <svg class="ilustracion" viewBox="0 0 1920 1080" style="top:120px">
+      <g transform="translate(540,580) scale(1.45)">
+        <rect x="-160" y="-90" width="320" height="180" rx="18" fill="#C4562F"/>
+        <rect x="-130" y="-150" width="260" height="70" rx="12" fill="#E7D9C2"/>
+        <rect x="-110" y="-136" width="220" height="42" rx="8" fill="#FFFBF4"/>
+        <g fill="#F0BE72"><rect x="-120" y="-50" width="70" height="46" rx="6"/><rect x="-30" y="-50" width="70" height="46" rx="6"/><rect x="60" y="-50" width="70" height="46" rx="6"/></g>
+        <text x="0" y="60" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#FBE6D6">CAJA DEL NEGOCIO</text>
+      </g>
+      <g transform="translate(1380,580) scale(1.45)">
+        <path d="M-130 -60 h260 l-24 200 h-212 z" fill="#A9B8A2"/>
+        <path d="M-70 -60 v-40 a70 40 0 0 1 140 0 v40" stroke="#8C9C85" stroke-width="12" fill="none"/>
+        <circle cx="-40" cy="20" r="26" fill="#C4562F"/><circle cx="30" cy="46" r="30" fill="#E3A03C"/>
+        <text x="0" y="180" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#6C7A66">GASTOS DE LA CASA</text>
+      </g>
+      <g id="billete-fuga" transform="translate(540,500) scale(1.45)">
+        <rect x="-52" y="-32" width="104" height="64" rx="8" fill="#EFCB84" stroke="#C79A45" stroke-width="4"/>
+        <circle cx="0" cy="0" r="17" fill="#C79A45" opacity=".5"/>
+      </g>
+    </svg>
+    <div class="etiqueta error" data-linea="1" data-desfase="4.5" data-y="16" style="position:absolute; left:0; top:200px">Sin registro no sabes si tu negocio es viable</div>
+  </div>
+</template>
+
+<template data-escena="error2">
+  <div class="contenido">
+    <div class="etiqueta error" data-in="0.2" data-y="16">Error 02 · La fuga no registrada</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:26px; max-width:1150px">“Llévate esto, no pasa nada”</h2>
+    <svg class="ilustracion" viewBox="0 0 1920 1080" style="top:60px">
+      <g transform="translate(520,600) scale(1.15)">
+        <rect x="-230" y="-260" width="460" height="330" rx="14" fill="#E7D9C2"/>
+        <g fill="#FFFBF4"><rect x="-210" y="-240" width="420" height="14" rx="6"/><rect x="-210" y="-140" width="420" height="14" rx="6"/><rect x="-210" y="-40" width="420" height="14" rx="6"/></g>
+        <g fill="#C4562F"><rect x="-190" y="-226" width="52" height="86" rx="8"/><rect x="-120" y="-226" width="52" height="86" rx="8"/></g>
+        <g fill="#4E7C59"><rect x="-50" y="-226" width="52" height="86" rx="8"/><rect x="20" y="-226" width="52" height="86" rx="8"/></g>
+        <g fill="#E3A03C"><rect x="-190" y="-126" width="52" height="86" rx="8"/><rect x="-120" y="-126" width="52" height="86" rx="8"/><rect x="-50" y="-126" width="52" height="86" rx="8"/></g>
+        <text x="0" y="110" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#7A6656">TU INVENTARIO</text>
+      </g>
+      <g id="producto-regalado" transform="translate(520,470) scale(1.15)">
+        <rect x="-26" y="-46" width="52" height="92" rx="10" fill="#E3A03C"/>
+        <rect x="-16" y="-62" width="32" height="22" rx="6" fill="#C4562F"/>
+      </g>
+      <g transform="translate(1125,560) scale(1.12)">
+        <circle cx="0" cy="-90" r="58" fill="#E8B98F"/>
+        <path d="M-84 130 v-140 a84 84 0 0 1 168 0 v140 z" fill="#3E6B8A"/>
+        <text x="0" y="190" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#7A6656">CONOCIDO / FAMILIAR</text>
+      </g>
+    </svg>
+    <div class="hoja" data-linea="2" data-desfase="0.6" data-y="30" style="position:absolute; right:0; top:300px; width:540px">
+      <div class="cab"><span>Fuga del mes</span><span id="fuga-total" class="neg">$0</span></div>
+      <div class="reng"><span>Refrescos de cortesía</span><b class="neg">−$180</b></div>
+      <div class="reng"><span>Muestras a familiares</span><b class="neg">−$340</b></div>
+      <div class="reng"><span>“Un juguito, mijo”</span><b class="neg">−$95</b></div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="error3">
+  <div class="contenido">
+    <div class="etiqueta error" data-in="0.2" data-y="16">Error 03 · Vanidad financiera</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:26px; max-width:1150px">Aparentar crecimiento<br>no es crecer</h2>
+    <svg class="ilustracion" viewBox="0 0 1920 1080" style="top:80px">
+      <g id="globo-vanidad" transform="translate(1400,560)">
+        <circle cx="0" cy="0" r="185" fill="#E3A03C" opacity=".92"/>
+        <path d="M0 185 l-18 44 h36 z" fill="#C4562F"/>
+        <text x="0" y="26" text-anchor="middle" font-family="Fraunces" font-size="104" font-weight="700" fill="#7A4A12">+900%</text>
+      </g>
+      <g transform="translate(1400,830)" opacity=".85">
+        <path d="M-190 0 h380" stroke="#C8B69C" stroke-width="8" stroke-linecap="round"/>
+        <text x="0" y="56" text-anchor="middle" font-family="Inter" font-size="26" font-weight="700" fill="#7A6656">MÉTRICAS SUPERFICIALES</text>
+      </g>
+    </svg>
+    <div class="fila-tarjetas" style="position:absolute; left:0; top:322px; width:860px; gap:28px">
+      <div class="tarjeta" data-in="2.4" data-y="30"><h3>Gastos accesorios</h3><p>Comprar lo que se ve bien, no lo que el negocio necesita.</p></div>
+      <div class="tarjeta" data-linea="1" data-desfase="2.6" data-y="30"><h3>Falsa sensación de éxito</h3><p>Números grandes sin un producto que sostenga el negocio.</p></div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="accion">
+  <div class="contenido" style="display:flex; flex-direction:column; justify-content:center">
+    <div class="etiqueta bien" data-in="0.2" data-y="16" style="align-self:flex-start">La buena noticia</div>
+    <h2 class="titulo chico" data-in="0.6" data-y="28" style="margin-top:28px; max-width:1350px">Si te identificaste con alguno, no te preocupes: lo valioso es <span style="color:var(--verde)">tomar acción hoy</span>.</h2>
+    <div data-linea="1" data-desfase="0.2" data-y="26" style="margin-top:56px; display:flex; align-items:center; gap:28px">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h15"/><path d="M13 6l6 6-6 6"/></svg>
+      <span class="titulo chico" style="color:var(--verde)">La herramienta clave: el presupuesto</span>
+    </div>
+  </div>
+</template>
+
+<template data-escena="presupuesto">
+  <div class="contenido">
+    <h2 class="titulo chico" data-in="0.2" data-y="22">Un presupuesto es, simplemente, <span style="color:var(--terracota)">un plan numérico</span>.</h2>
+    <div class="hoja" data-in="1.2" data-y="34" style="margin-top:50px; width:1160px">
+      <div class="cab"><span>Plan del mes · mi negocio</span><span>Límite</span></div>
+      <div class="reng" data-in="2.6"><span>Ingresos que espero recibir</span><b class="pos" data-cuenta="38000">$0</b></div>
+      <div class="reng" data-in="3.7"><span>Renta del local</span><b data-cuenta="6500">$0</b></div>
+      <div class="reng" data-in="4.6"><span>Insumos y mercancía</span><b data-cuenta="14200">$0</b></div>
+      <div class="reng" data-in="5.5"><span>Servicios (luz, agua, internet)</span><b data-cuenta="2300">$0</b></div>
+      <div class="reng" data-linea="1" data-desfase="2.2" style="background:#F4EFE4"><span><b>Límite de gastos operativos</b></span><b class="neg" data-cuenta="23000">$0</b></div>
+    </div>
+    <div class="etiqueta neutra" data-linea="2" data-desfase="0.8" data-y="16" style="position:absolute; right:0; top:150px">Decides ANTES de gastar</div>
+  </div>
+</template>
+
+<template data-escena="pasos">
+  <div class="contenido" style="display:flex; flex-direction:column; justify-content:center">
+    <div class="etiqueta bien" data-in="0.1" data-y="16" style="align-self:flex-start">Plan de acción</div>
+    <h2 class="titulo" data-in="0.4" data-y="28" style="margin-top:28px">Tres primeros pasos</h2>
+  </div>
+</template>
+
+<template data-escena="paso1">
+  <div class="contenido">
+    <div class="etiqueta bien" data-in="0.2" data-y="16">Paso 01</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:24px">Separa tus cuentas y págate un sueldo</h2>
+    <div class="fila-tarjetas" style="margin-top:56px">
+      <div class="tarjeta" id="cuenta-personal" data-in="1.5" data-y="30" data-x="90">
+        <div><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="var(--tinta-suave)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9.8V20h13V9.8"/><path d="M10 20v-5.5h4V20"/></svg></div><h3 style="margin-top:12px">Cuenta personal</h3><p>Tu casa, tu súper, tus gastos.</p>
+      </div>
+      <div class="tarjeta" id="cuenta-negocio" data-in="1.9" data-y="30" data-x="-90">
+        <div><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="var(--terracota)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5h17L19 4.5H5z"/><path d="M4.5 9.5V20h15V9.5"/><path d="M9 20v-6h6v6"/></svg></div><h3 style="margin-top:12px">Cuenta del negocio</h3><p>Exclusiva para el negocio.</p>
+      </div>
+      <div class="tarjeta" data-linea="1" data-desfase="3.2" data-y="30" style="background:#F0F6F1; border-color:rgba(78,124,89,.25)">
+        <div><svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9.5v0M18 14.5v0"/></svg></div><h3 style="margin-top:12px">Sueldo fijo</h3><p>Págate como a un colaborador más.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="paso2">
+  <div class="contenido">
+    <div class="etiqueta bien" data-in="0.2" data-y="16">Paso 02</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:24px">Aplica un presupuesto básico</h2>
+    <div class="hoja" data-in="1.5" data-y="34" style="margin-top:46px; width:1050px">
+      <div class="cab"><span>Libreta u hoja de cálculo</span><span>Presupuesto</span></div>
+      <div class="reng" data-in="2.6"><span>Renta</span><b>$6,500</b></div>
+      <div class="reng" data-in="3.4"><span>Insumos</span><b>$14,200</b></div>
+      <div class="reng" data-in="4.2"><span>Servicios</span><b>$2,300</b></div>
+    </div>
+    <div class="etiqueta error" data-linea="1" data-desfase="5.4" data-y="18" style="position:absolute; right:20px; top:500px">No gastes fuera de lo planeado</div>
+  </div>
+</template>
+
+<template data-escena="paso3">
+  <div class="contenido">
+    <div class="etiqueta bien" data-in="0.2" data-y="16">Paso 03</div>
+    <h2 class="titulo medio" data-in="0.5" data-y="26" style="margin-top:24px">Mide y registra todo</h2>
+    <div class="hoja" data-in="1.4" data-y="34" style="margin-top:46px; width:1200px">
+      <div class="cab"><span>Registro del día</span><span>Entradas y salidas</span></div>
+      <div class="reng registro" data-in="2.4"><span>Venta de mostrador</span><b class="pos">+$1,240</b></div>
+      <div class="reng registro" data-in="3.3"><span>Compra de insumos</span><b class="neg">−$680</b></div>
+      <div class="reng registro" data-in="4.2"><span>Servicios del local</span><b class="neg">−$310</b></div>
+      <div class="reng registro" data-linea="1" data-desfase="2.6" style="background:#FDF3E6"><span><b>Muestras y regalos</b> (¡también se anotan!)</span><b class="neg">−$95</b></div>
+    </div>
+  </div>
+</template>
+
+<template data-escena="cierre">
+  <div class="contenido" style="display:flex; flex-direction:column; justify-content:center">
+    <h2 class="titulo" data-in="0.2" data-y="30" style="max-width:1500px">Administrar no significa <span style="text-decoration:line-through; color:var(--tinta-suave)">no gastar</span>.</h2>
+    <h2 class="titulo" data-linea="0" data-desfase="3.4" data-y="30" style="margin-top:24px; color:var(--terracota); max-width:1500px">Es gastar con estrategia, dirección y propósito.</h2>
+    <div class="etiqueta bien" data-linea="1" data-desfase="0.4" data-y="18" style="align-self:flex-start; margin-top:48px">Que tu proyecto no sólo flote: que crezca con solidez</div>
+  </div>
+</template>
+
+<script>
+/* ==================================================================
+   MOTOR DE ANIMACIÓN
+   No hay reloj interno: TODO se dibuja en función del segundo que se
+   pide con seek(t). Playwright pide t = 0, 1/30, 2/30... y fotografía.
+   ================================================================== */
+const PARAMS = new URLSearchParams(location.search);
+const RUTA_TIMELINE = PARAMS.get('tl') || 'salida/completo/timeline.json';
+const DUR_ENTRADA = 0.75;   // cuánto tarda un elemento en entrar
+const FUNDIDO = 0.55;       // cruce entre una escena y la siguiente
+
+const CAPITULOS = {
+  apertura:'Introducción', flujo:'Introducción', agenda:'Introducción',
+  pregunta:'Fundamentos', definicion:'Fundamentos', ventajas:'Fundamentos',
+  ventaja1:'Fundamentos', ventaja2:'Fundamentos', ventaja3:'Fundamentos',
+  'transicion-errores':'Errores comunes', error1:'Errores comunes',
+  error2:'Errores comunes', error3:'Errores comunes',
+  accion:'Plan de acción', presupuesto:'Plan de acción', pasos:'Plan de acción',
+  paso1:'Plan de acción', paso2:'Plan de acción', paso3:'Plan de acción', cierre:'Cierre'
+};
+
+const limite01 = x => x < 0 ? 0 : (x > 1 ? 1 : x);
+const suave = p => 1 - Math.pow(1 - p, 3);             // arranca rápido, frena suave
+const pesos = n => '$' + Math.round(n).toLocaleString('es-MX');
+
+const $escenario = document.getElementById('escenario');
+const $subtitulo = document.getElementById('subtitulo');
+const $capitulo  = document.getElementById('capitulo');
+const $progreso  = document.querySelector('#barra-progreso i');
+const $grano     = document.getElementById('grano');
+
+let TL = null;
+let instancias = [];
+let textoSubActual = null;
+
+/* ---------- las tres ventajas se construyen aquí (misma pieza, 4 escenas) ---------- */
+const ICONOS = {
+  lupa:  '<circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2L20.5 20.5"/>',
+  reloj: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.3 2"/>',
+  planta:'<path d="M12 20.5V11"/><path d="M12 12.5C12 8 8.5 5 4.5 4.5 4 9 7 12.5 12 12.5z"/><path d="M12 14c0-3.6 2.8-6 6-6.4.4 3.6-2 6.4-6 6.4z"/>'
+};
+const VENTAJAS = [
+  { icono:'lupa',   titulo:'Claridad y control',     texto:'¿Tu negocio genera valor o sólo movimiento sin ganancias?' },
+  { icono:'reloj',  titulo:'Capacidad de reacción',  texto:'Te avisa a tiempo si te estás quedando sin capital.' },
+  { icono:'planta', titulo:'Tranquilidad operativa', texto:'Cubres tus compromisos y te enfocas en hacer crecer tu proyecto.' }
+];
+
+function construirVentajas(activa) {
+  const tarjetas = VENTAJAS.map((v, i) => {
+    const esActiva = (i === activa);
+    const apagada = (activa >= 0 && !esActiva);
+    const entrada = activa < 0 ? (0.6 + i * 0.45) : 0.05;
+    return `<div class="tarjeta" data-in="${entrada}" data-y="${activa < 0 ? 40 : 0}"
+        style="${esActiva ? 'border:2px solid var(--verde); box-shadow:0 22px 60px rgba(78,124,89,.22);' : ''}
+               ${apagada ? 'opacity:1; background:#F3ECE0; box-shadow:none;' : ''}">
+      <svg width="58" height="58" viewBox="0 0 24 24" fill="none"
+           stroke="${esActiva ? 'var(--verde)' : 'var(--tinta-suave)'}" stroke-width="1.7"
+           stroke-linecap="round" stroke-linejoin="round" style="${apagada ? 'opacity:.5' : ''}">${ICONOS[v.icono]}</svg>
+      <h3 style="margin-top:16px; ${apagada ? 'opacity:.5' : ''}">${v.titulo}</h3>
+      <p style="${apagada ? 'opacity:.45' : ''}">${v.texto}</p>
+    </div>`;
+  }).join('');
+  const div = document.createElement('div');
+  div.innerHTML = `<div class="contenido">
+      <h2 class="titulo chico" data-in="0.1" data-y="20">Una administración sana te da <span style="color:var(--verde)">tres grandes ventajas</span>.</h2>
+      <div class="fila-tarjetas" style="margin-top:64px">${tarjetas}</div>
+    </div>`;
+  return div.firstElementChild;
+}
+
+/* ---------- movimientos especiales de algunas escenas ---------- */
+const MOVIMIENTOS = {
+  apertura(local, p, inst) {
+    const sol = inst.q('#sol-rayos');
+    if (sol) sol.setAttribute('transform', `rotate(${(local * 3.5).toFixed(2)} 250 150)`);
+    const letrero = inst.q('#letrero-abierto');
+    if (letrero) {
+      const e = suave(limite01((local - 1.9) / 0.7));
+      letrero.setAttribute('transform', `translate(1560,455) scale(${(0.55 + 0.45 * e).toFixed(3)})`);
+      letrero.style.opacity = e.toFixed(3);
+    }
+    const fig = inst.q('#figura-narrador');
+    if (fig) fig.setAttribute('transform', `translate(1400,${(530 + Math.sin(local * 1.05) * 7).toFixed(1)}) scale(0.85)`);
+  },
+
+  flujo(local, p, inst) {
+    const ventas = [52, 71, 86, 100], utilidad = [16, 19, 15, 18];
+    inst.nodo.querySelectorAll('.barra-v').forEach((b, i) => {
+      b.style.height = (ventas[i] * suave(limite01((local - 1.9 - i * 0.14) / 0.8))).toFixed(1) + '%';
+    });
+    inst.nodo.querySelectorAll('.barra-u').forEach((b, i) => {
+      b.style.height = (utilidad[i] * suave(limite01((local - 2.5 - i * 0.14) / 0.8))).toFixed(1) + '%';
+    });
+  },
+
+  pregunta(local, p, inst) {
+    const linea = inst.q('#subrayado');
+    if (!linea) return;
+    const largo = linea.getTotalLength();
+    linea.style.strokeDasharray = largo;
+    linea.style.strokeDashoffset = (largo * (1 - suave(limite01((local - 0.9) / 1.1)))).toFixed(2);
+  },
+
+  error1: viaje('#billete-fuga', 540, 500, 1380, 500, 2.2, 3.6, 150, 1.45),
+  error2: (function () {
+    const mover = viaje('#producto-regalado', 520, 470, 1125, 500, 3.0, 4.4, 120, 1.15);
+    return function (local, p, inst) {
+      mover(local, p, inst);
+      const total = inst.q('#fuga-total');
+      if (total) {
+        const desde = (inst.tiempos[2] ?? inst.tiempos[inst.tiempos.length - 1] ?? 0) + 1.6;
+        total.textContent = '−' + pesos(615 * suave(limite01((local - desde) / 2.2)));
+      }
+    };
+  })(),
+
+  error3(local, p, inst) {
+    const globo = inst.q('#globo-vanidad');
+    if (!globo) return;
+    const inflado = suave(limite01((local - 1.2) / 3.2));
+    const escala = 0.35 + 0.8 * inflado + Math.sin(local * 1.5) * 0.02;
+    globo.setAttribute('transform', `translate(1400,${(560 - 26 * inflado).toFixed(1)}) scale(${escala.toFixed(3)})`);
+    globo.style.opacity = Math.min(1, inflado * 1.8).toFixed(3);
+  }
+};
+
+/* Genera un movimiento de "algo que viaja de un punto a otro", en bucle. */
+function viaje(selector, x1, y1, x2, y2, empieza, ciclo, altura, escala = 1) {
+  return function (local, p, inst) {
+    const g = inst.q(selector);
+    if (!g) return;
+    let u = (local - empieza) / ciclo;
+    if (u < 0) { g.style.opacity = 0; return; }
+    u -= Math.floor(u);
+    const x = x1 + (x2 - x1) * u;
+    const y = y1 + (y2 - y1) * u - Math.sin(u * Math.PI) * altura;
+    g.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(u * 40 - 20).toFixed(1)}) scale(${escala})`);
+    g.style.opacity = (Math.min(1, u / 0.12) * Math.min(1, (1 - u) / 0.12)).toFixed(3);
+  };
+}
+
+/* ---------- construcción de las escenas ---------- */
+function crearEscena(esc, lineasEsc) {
+  const nodo = document.createElement('div');
+  nodo.className = 'escena';
+  const lienzo = document.createElement('div');
+  lienzo.className = 'lienzo';
+  nodo.appendChild(lienzo);
+
+  if (esc.nombre === 'ventajas' || /^ventaja[123]$/.test(esc.nombre)) {
+    const activa = esc.nombre === 'ventajas' ? -1 : parseInt(esc.nombre.slice(-1)) - 1;
+    lienzo.appendChild(construirVentajas(activa));
+  } else {
+    const tpl = document.querySelector(`template[data-escena="${esc.nombre}"]`);
+    if (tpl) lienzo.appendChild(tpl.content.cloneNode(true));
+    else console.warn('Escena sin plantilla:', esc.nombre);
+  }
+
+  const dur = esc.fin - esc.inicio;
+  const tiempos = lineasEsc.map(l => +(l.inicio - esc.inicio).toFixed(3));
+
+  const arranque = el => {
+    let t = null;
+    if (el.dataset.in !== undefined) t = parseFloat(el.dataset.in);
+    else if (el.dataset.linea !== undefined) {
+      const i = Math.min(parseInt(el.dataset.linea), tiempos.length - 1);
+      t = (tiempos[i] || 0) + parseFloat(el.dataset.desfase || 0);
+    }
+    if (t === null) return null;
+    // Si la escena es corta (por ejemplo en la versión de 90 s) acercamos los
+    // elementos tardíos para que igual alcancen a aparecer.
+    return Math.max(0, Math.min(t, dur - 0.9));
+  };
+
+  const anims = [];
+  lienzo.querySelectorAll('[data-in],[data-linea]').forEach(el => {
+    const inicio = arranque(el);
+    if (inicio === null) return;
+    anims.push({
+      el, inicio,
+      x: parseFloat(el.dataset.x || 0),
+      y: parseFloat(el.dataset.y || 0),
+      s: parseFloat(el.dataset.s || 1),
+      base: el.style.transform || ''
+    });
+    el.style.opacity = 0;
+  });
+
+  // Los números que "cuentan" heredan el tiempo de la fila donde viven.
+  const contadores = [];
+  lienzo.querySelectorAll('[data-cuenta]').forEach(el => {
+    const padre = el.closest('[data-in],[data-linea]');
+    const inicio = padre ? arranque(padre) : 0;
+    contadores.push({ el, inicio: (inicio ?? 0) + 0.25, valor: parseFloat(el.dataset.cuenta) });
+  });
+
+  $escenario.appendChild(nodo);
+  return {
+    esc, nodo, lienzo, anims, contadores, tiempos, visible: false,
+    dur, mover: MOVIMIENTOS[esc.nombre] || null,
+    q: sel => lienzo.querySelector(sel)
+  };
+}
+
+/* ---------- el corazón: dibujar el segundo t ---------- */
+function seek(t) {
+  $grano.style.backgroundPosition = `${(Math.floor(t * 9) % 7) * 31}px ${(Math.floor(t * 9) % 5) * 43}px`;
+  $progreso.style.width = (100 * limite01(t / TL.duracion)).toFixed(3) + '%';
+
+  let dominante = null, opDominante = -1;
+
+  for (const inst of instancias) {
+    const local = t - inst.esc.inicio;
+    if (local < -0.05 || local > inst.dur + 0.05) {
+      if (inst.visible) { inst.nodo.style.display = 'none'; inst.visible = false; }
+      continue;
+    }
+    if (!inst.visible) { inst.nodo.style.display = 'block'; inst.visible = true; }
+
+    const opacidad = suave(limite01(local / FUNDIDO)) * suave(limite01((inst.dur - local) / 0.5));
+    inst.nodo.style.opacity = opacidad.toFixed(4);
+    if (opacidad > opDominante) { opDominante = opacidad; dominante = inst; }
+
+    const p = limite01(local / inst.dur);
+    inst.lienzo.style.transform = `scale(${(1 + 0.045 * p).toFixed(4)}) translateY(${(-10 * p).toFixed(2)}px)`;
+
+    for (const a of inst.anims) {
+      const e = suave(limite01((local - a.inicio) / DUR_ENTRADA));
+      a.el.style.opacity = e.toFixed(3);
+      a.el.style.transform = `${a.base} translate(${((1 - e) * a.x).toFixed(2)}px, ${((1 - e) * a.y).toFixed(2)}px) scale(${(a.s + (1 - a.s) * e).toFixed(4)})`;
+    }
+    for (const c of inst.contadores) {
+      c.el.textContent = pesos(c.valor * suave(limite01((local - c.inicio) / 1.3)));
+    }
+    if (inst.mover) inst.mover(local, p, inst);
+  }
+
+  if (dominante) $capitulo.textContent = CAPITULOS[dominante.esc.nombre] || '';
+
+  // subtítulo activo
+  let sub = null;
+  for (const linea of TL.lineas) {
+    for (const s of linea.subs) {
+      if (t >= s.inicio - 0.15 && t <= s.fin + 0.12) { sub = s; break; }
+    }
+    if (sub) break;
+  }
+  if (sub) {
+    if (sub.texto !== textoSubActual) { $subtitulo.textContent = sub.texto; textoSubActual = sub.texto; }
+    const entra = limite01((t - (sub.inicio - 0.15)) / 0.2);
+    const sale = limite01(((sub.fin + 0.12) - t) / 0.2);
+    $subtitulo.style.opacity = (suave(entra) * suave(sale)).toFixed(3);
+  } else {
+    $subtitulo.style.opacity = 0;
+  }
+}
+window.seek = seek;
+
+/* ---------- arranque ---------- */
+async function iniciar() {
+  TL = await (await fetch(RUTA_TIMELINE, { cache: 'no-store' })).json();
+  window.TL = TL;
+  for (const esc of TL.escenas) {
+    instancias.push(crearEscena(esc, TL.lineas.filter(l => l.escena === esc.nombre)));
+  }
+  await document.fonts.ready;
+  seek(0);
+  window.LISTO = true;
+
+  if (PARAMS.get('ui') === '1') {          // modo revisión manual en el navegador
+    const ui = document.getElementById('ui');
+    const rango = document.getElementById('ui-rango');
+    const etiqueta = document.getElementById('ui-t');
+    const nombreEsc = document.getElementById('ui-esc');
+    ui.style.display = 'flex';
+    rango.max = TL.duracion;
+    const audio = new Audio(RUTA_TIMELINE.replace('timeline.json', 'narracion.wav'));
+    const pintar = t => {
+      seek(t); etiqueta.textContent = t.toFixed(1) + 's / ' + TL.duracion.toFixed(0) + 's';
+      const e = TL.escenas.find(e => t >= e.inicio && t < e.fin);
+      nombreEsc.textContent = e ? e.nombre : '';
+    };
+    rango.addEventListener('input', () => { audio.currentTime = +rango.value; pintar(+rango.value); });
+    document.addEventListener('keydown', ev => {
+      if (ev.code !== 'Space') return;
+      ev.preventDefault();
+      if (audio.paused) { audio.currentTime = +rango.value; audio.play(); bucle(); } else audio.pause();
+    });
+    const bucle = () => {
+      if (audio.paused) return;
+      rango.value = audio.currentTime; pintar(audio.currentTime);
+      requestAnimationFrame(bucle);
+    };
+    pintar(0);
+  }
+}
+iniciar();
+</script>
+</body>
+</html>

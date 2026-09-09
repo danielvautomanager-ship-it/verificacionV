@@ -1,0 +1,21 @@
+{
+  "titulo": "3 errores que le cuestan dinero a tu negocio",
+  "subtitulo": "Y los 3 pasos para poner orden hoy mismo",
+  "voz": "es_MX-claude-high",
+  "velocidad": 1.04,
+  "lineas": [
+    { "id": "01", "escena": "apertura", "texto": "La mayoría de los negocios no fracasan por falta de buenas ideas: fracasan porque se quedan sin flujo de efectivo.", "pausa": 0.35 },
+    { "id": "02", "escena": "transicion-errores", "texto": "Estos son los tres errores que más dinero te cuestan.", "pausa": 0.5 },
+
+    { "id": "03", "escena": "error1", "texto": "Uno: mezclar el dinero personal con el del negocio. Tomar dinero de la caja para las compras de la casa arruina tu contabilidad.", "pausa": 0.45 },
+    { "id": "04", "escena": "error2", "texto": "Dos: la fuga no registrada. Ese juguito que le regalas al conocido costó dinero, y fuga a fuga merma tus ganancias.", "pausa": 0.45 },
+    { "id": "05", "escena": "error3", "texto": "Tres: la vanidad financiera. Gastar en cosas accesorias y guiarte por métricas superficiales te da una falsa sensación de éxito.", "pausa": 0.6 },
+
+    { "id": "06", "escena": "pasos", "texto": "¿Cómo lo corriges? Con tres pasos muy simples.", "pausa": 0.45 },
+    { "id": "07", "escena": "paso1", "texto": "Primero: separa tus cuentas y págate un sueldo fijo, como si fueras un colaborador más.", "pausa": 0.4 },
+    { "id": "08", "escena": "paso2", "texto": "Segundo: haz un presupuesto básico para renta, insumos y servicios, y respeta esos límites.", "pausa": 0.4 },
+    { "id": "09", "escena": "paso3", "texto": "Tercero: registra cada ingreso y cada egreso, incluyendo los regalos y las muestras.", "pausa": 0.5 },
+
+    { "id": "10", "escena": "cierre", "texto": "Administrar no significa no gastar: significa gastar con estrategia, dirección y propósito.", "pausa": 1.4 }
+  ]
+}

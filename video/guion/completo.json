@@ -1,0 +1,57 @@
+{
+  "titulo": "Administra el dinero de tu negocio",
+  "subtitulo": "Flujo de efectivo, errores comunes y tu primer presupuesto",
+  "voz": "es_MX-claude-high",
+  "velocidad": 1.04,
+  "lineas": [
+    { "id": "01", "escena": "apertura", "texto": "¡Hola de nuevo a todos! Si anteriormente vimos por qué no hace falta hacer un plan extenso de cien páginas para lanzar tu negocio, hoy vamos a hablar de lo que verdaderamente sostiene o destruye cualquier emprendimiento: el dinero y cómo lo administras.", "pausa": 0.5 },
+
+    { "id": "02", "escena": "flujo", "texto": "Hay una realidad muy clara en el mundo del emprendimiento: la mayoría de los negocios no fracasan por falta de buenas ideas, sino porque se quedan sin flujo de efectivo o porque confunden el volumen de ventas con tener utilidades reales.", "pausa": 0.5 },
+
+    { "id": "03", "escena": "agenda", "texto": "Hoy vamos a ver, de forma muy sencilla, qué es una administración monetaria saludable, qué malas prácticas debemos evitar y cómo empezar a poner orden hoy mismo.", "pausa": 0.7 },
+
+    { "id": "04", "escena": "pregunta", "texto": "Empecemos por lo fundamental: ¿Por qué necesitas administrar tu dinero desde el primer día?", "pausa": 0.7 },
+
+    { "id": "05", "escena": "definicion", "texto": "Pensar que la administración es una tarea que solo le corresponde a las grandes empresas es un error importante.", "pausa": 0.25 },
+    { "id": "06", "escena": "definicion", "texto": "Administrar tu dinero no es más que saber con precisión de dónde viene cada recurso, a dónde se destina y qué beneficio le aporta a tu negocio.", "pausa": 0.6 },
+
+    { "id": "07", "escena": "ventajas", "texto": "Llevar una administración financiera sana te brinda tres grandes ventajas.", "pausa": 0.4 },
+    { "id": "08", "escena": "ventaja1", "texto": "Primera, claridad y control: te permite entender si tu modelo de negocio realmente genera valor o si solo estás generando movimiento sin ganancias.", "pausa": 0.35 },
+    { "id": "09", "escena": "ventaja2", "texto": "Segunda, capacidad de reacción: te avisa a tiempo si te estás quedando sin capital para que puedas hacer ajustes antes de que sea tarde.", "pausa": 0.35 },
+    { "id": "10", "escena": "ventaja3", "texto": "Tercera, tranquilidad operativa: trabajar con la certeza de que podrás cubrir tus compromisos y gastos te permite enfocarte en hacer crecer tu proyecto.", "pausa": 0.7 },
+
+    { "id": "11", "escena": "transicion-errores", "texto": "Ahora bien, cuando vamos empezando, es muy fácil caer en ciertos hábitos sin darnos cuenta de lo dañinos que son para el negocio. ¿Cuáles son los principales errores que debemos evitar?", "pausa": 0.7 },
+
+    { "id": "12", "escena": "error1", "texto": "El primer peligro es mezclar el dinero personal con el del negocio.", "pausa": 0.2 },
+    { "id": "13", "escena": "error1", "texto": "Usar las ventas del día para hacer las compras de la casa o tomar dinero de la caja sin registrarlo arruina tu contabilidad y te impide saber si la empresa es viable.", "pausa": 0.6 },
+
+    { "id": "14", "escena": "error2", "texto": "El segundo peligro es regalar el inventario, o la fuga no registrada.", "pausa": 0.2 },
+    { "id": "15", "escena": "error2", "texto": "Este es el clásico ejemplo que vemos muy seguido en negocios familiares: llega un conocido o familiar y decimos: mira, ten un juguito, mijo, te lo regalo. O: llévate esto, no pasa nada.", "pausa": 0.3 },
+    { "id": "16", "escena": "error2", "texto": "Puede parecer un gesto inocente o un detalle pequeño, pero esos productos costaron dinero.", "pausa": 0.25 },
+    { "id": "17", "escena": "error2", "texto": "Si regalas mercancía sin un registro ni un presupuesto para cortesías, estás, fuga a fuga, mermando las ganancias de tu tienda.", "pausa": 0.6 },
+
+    { "id": "18", "escena": "error3", "texto": "El tercer peligro es la vanidad financiera.", "pausa": 0.2 },
+    { "id": "19", "escena": "error3", "texto": "Gastar en cosas accesorias o aparentar un crecimiento gigantesco antes de tener un producto que sostenga el negocio. Guiarse solo por métricas superficiales da una falsa sensación de éxito.", "pausa": 0.7 },
+
+    { "id": "20", "escena": "accion", "texto": "Si te identificaste con alguna de estas situaciones, no te preocupes. Lo valioso es tomar acción y comenzar a aplicar orden hoy mismo.", "pausa": 0.25 },
+    { "id": "21", "escena": "accion", "texto": "Y la herramienta clave para lograrlo es el presupuesto.", "pausa": 0.6 },
+
+    { "id": "22", "escena": "presupuesto", "texto": "Pero, ¿qué es exactamente un presupuesto? Para ponerlo en términos sencillos: un presupuesto es simplemente un plan numérico.", "pausa": 0.25 },
+    { "id": "23", "escena": "presupuesto", "texto": "Es como un mapa financiero donde decides, antes de gastar, cuánto dinero vas a destinar a cada actividad o necesidad del negocio durante un periodo determinado.", "pausa": 0.25 },
+    { "id": "24", "escena": "presupuesto", "texto": "La idea básica es proyectar cuánto esperas recibir de ingresos y fijar un límite para tus gastos operativos.", "pausa": 0.7 },
+
+    { "id": "25", "escena": "pasos", "texto": "¿Cómo puedes empezar a dar estos primeros pasos?", "pausa": 0.6 },
+
+    { "id": "26", "escena": "paso1", "texto": "Primero, separa tus cuentas y asígnate un sueldo.", "pausa": 0.2 },
+    { "id": "27", "escena": "paso1", "texto": "Ten una cuenta o caja destinada exclusivamente al negocio, y págate un sueldo fijo como si fueras un colaborador más.", "pausa": 0.6 },
+
+    { "id": "28", "escena": "paso2", "texto": "Segundo, aplica un presupuesto básico.", "pausa": 0.2 },
+    { "id": "29", "escena": "paso2", "texto": "Utiliza una libreta o una hoja de cálculo para anotar cuánto necesitas para renta, insumos y servicios. Respeta esos límites y no gastes fuera de lo planeado.", "pausa": 0.6 },
+
+    { "id": "30", "escena": "paso3", "texto": "Tercero, mide y registra todo.", "pausa": 0.2 },
+    { "id": "31", "escena": "paso3", "texto": "Lleva un registro riguroso de cada ingreso y egreso, incluyendo esas pequeñas muestras o regalos. Esto te dará la información necesaria para corregir el rumbo a tiempo.", "pausa": 0.8 },
+
+    { "id": "32", "escena": "cierre", "texto": "Recuerda esto: administrar no significa no gastar, sino gastar con estrategia, dirección y propósito.", "pausa": 0.35 },
+    { "id": "33", "escena": "cierre", "texto": "Tomar el control de tus finanzas es la decisión más importante para garantizar que tu proyecto no solo se mantenga a flote, sino que crezca con solidez.", "pausa": 1.6 }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "video-administracion-dinero",
+  "private": true,
+  "type": "module",
+  "description": "Render de video educativo con Playwright + ffmpeg",
+  "scripts": {
+    "revisar": "node revisar.mjs --tl salida/completo/timeline.json --escenas"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}

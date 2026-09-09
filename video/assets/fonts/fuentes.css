@@ -1,0 +1,4 @@
+/* Fuentes variables descargadas de Google Fonts (subconjunto latin).
+   Se guardan localmente para que el render sea siempre idéntico y no dependa de internet. */
+@font-face{font-family:'Fraunces';font-style:normal;font-weight:100 900;font-display:block;src:url('Fraunces.woff2') format('woff2');}
+@font-face{font-family:'Inter';font-style:normal;font-weight:100 900;font-display:block;src:url('Inter.woff2') format('woff2');}

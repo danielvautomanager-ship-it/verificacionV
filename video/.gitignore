@@ -1,0 +1,4 @@
+node_modules/
+salida/
+assets/voz/*.onnx
+assets/voz/*.onnx.json
