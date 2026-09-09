@@ -123,3 +123,16 @@ por el video y la **barra espaciadora** lo reproduce con audio.
 - **El "presentador" y el B-roll son ilustraciones**, no video filmado: Playwright dibuja
   páginas web, no graba personas. El contenido y la estructura del guion sí se respetan tal cual.
 - `salida/` y `node_modules/` no se suben a git (los videos pesan decenas de MB).
+
+---
+
+## Versión ligera para compartir
+
+El video completo en calidad de render pesa ~110 MB. Para WhatsApp, correo o para enviarlo por
+chat conviene una copia comprimida (misma resolución, ~22 MB):
+
+```bash
+ffmpeg -i salida/video-completo.mp4 -c:v libx264 -crf 26 -preset fast \
+       -pix_fmt yuv420p -c:a aac -b:a 160k -movflags +faststart \
+       salida/video-completo-ligero.mp4
+```
