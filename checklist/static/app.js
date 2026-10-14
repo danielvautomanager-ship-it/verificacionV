@@ -8,7 +8,6 @@ const NIVELES = [
   { id: "irrigadores", nombre: "Irrigadores" },
   { id: "freno", nombre: "Freno" },
 ];
-const OPC_NIVEL = [["max", "MAX"], ["medio", "Medio"], ["min", "MIN"]];
 const OPC_SN = [["si", "SÍ"], ["no", "NO"]];
 const LUCES = [
   ["cuartos", "Cuartos"], ["direccionales", "Direccionales"], ["intermitentes", "Intermitentes"],
@@ -72,6 +71,30 @@ function segmento(clave, opciones) {
   return cont;
 }
 
+// Barra de nivel de MIN a MAX: se desliza con el dedo y muestra el porcentaje.
+const nivelValido = (v) => (typeof v === "number" && v >= 0 && v <= 100 ? v : null);
+
+function barraNivel(clave) {
+  const cont = document.createElement("div");
+  cont.className = "nivel-barra";
+  cont.innerHTML = `<div class="escala"><span>MIN</span><span class="pct"></span><span>MAX</span></div>
+    <input type="range" min="0" max="100" step="5" aria-label="Nivel de MIN a MAX">
+    <div class="marcas"><i></i><i></i><i></i><i></i><i></i></div>`;
+  const rango = cont.querySelector("input");
+  const pct = cont.querySelector(".pct");
+  const pintar = () => {
+    const v = nivelValido(estado.v[clave]);
+    cont.classList.toggle("vacio", v === null);
+    cont.classList.toggle("bajo", v !== null && v <= 25);
+    rango.value = v === null ? 50 : v;
+    rango.style.setProperty("--p", (v === null ? 50 : v) + "%");
+    pct.textContent = v === null ? "Desliza para marcar" : v + "%";
+  };
+  rango.addEventListener("input", () => { estado.v[clave] = Number(rango.value); pintar(); guardar(); });
+  pintar();
+  return cont;
+}
+
 function filaSN(clave, nombre) {
   const f = document.createElement("div");
   f.className = "fila";
@@ -94,7 +117,7 @@ function construir() {
       <div class="fila"><span class="etq">Nivel</span></div>
       <div class="fila"><span class="etq">Tapón</span></div>`;
     d.firstChild.textContent = n.nombre;
-    d.children[1].appendChild(segmento(`nivel_${n.id}`, OPC_NIVEL));
+    d.children[1].appendChild(barraNivel(`nivel_${n.id}`));
     d.children[2].appendChild(segmento(`tapon_${n.id}`, OPC_SN));
     $("niveles").appendChild(d);
   }
@@ -117,15 +140,19 @@ function construir() {
 
   const tabla = document.createElement("div");
   tabla.className = "scroll";
-  let html = `<table class="tabla-llantas"><thead><tr><th>Pos.</th>`;
-  for (const [, t] of COLS_LLANTA) html += `<th>${t}</th>`;
+  let html = `<table class="tabla-llantas"><thead><tr><th>Pos.</th><th>No. económico</th>`;
+  for (const t of ["Buenas cond.", "Golpe llanta/rin", "Desgas-tada", "Para repar."]) html += `<th>${t.replace("-", "&shy;")}</th>`;
   html += `</tr></thead><tbody>`;
   for (const p of POSICIONES) {
-    html += `<tr><td>${p === "REFA" ? "Refa:" : p + "-"}</td>`;
+    html += `<tr><td>${p === "REFA" ? "Refa:" : p + "-"}</td><td><input class="eco-llanta" data-eco="llanta_eco_${p}" autocomplete="off" aria-label="No. económico posición ${p}"></td>`;
     for (const [c] of COLS_LLANTA) html += `<td data-k="llanta_${p}_${c}"></td>`;
     html += `</tr>`;
   }
   tabla.innerHTML = html + `</tbody></table>`;
+  tabla.querySelectorAll("input[data-eco]").forEach((inp) => {
+    inp.value = estado.v[inp.dataset.eco] || "";
+    inp.addEventListener("input", () => { estado.v[inp.dataset.eco] = inp.value; guardar(); });
+  });
   tabla.querySelectorAll("td[data-k]").forEach((td) => td.appendChild(segmento(td.dataset.k, OPC_SN)));
   $("llantas").appendChild(tabla);
 
@@ -215,6 +242,22 @@ async function generarPDF() {
     }
   };
 
+  // Barra de nivel: relleno desde MIN hasta el valor marcado, con rayitas cada 25%.
+  const barraPDF = (x, y, v) => {
+    const w = 32;
+    doc.setDrawColor(60); doc.setLineWidth(0.3); doc.setFillColor(255);
+    doc.rect(x, y - 3.5, w, 4, "FD");
+    if (v !== null) {
+      v <= 25 ? doc.setFillColor(211, 47, 47) : doc.setFillColor(...AZUL);
+      if (v > 0) doc.rect(x, y - 3.5, w * v / 100, 4, "F");
+      doc.setDrawColor(0); doc.setLineWidth(0.7); doc.line(x + w * v / 100, y - 5, x + w * v / 100, y + 1.5);
+      texto(v + "%", x + w + 2, y, 8, true);
+    } else texto("-", x + w + 2, y, 8);
+    doc.setDrawColor(120); doc.setLineWidth(0.2);
+    [25, 50, 75].forEach((m) => doc.line(x + w * m / 100, y - 3.5, x + w * m / 100, y - 2));
+    texto("MIN", x, y + 4, 5.5); texto("MAX", x + w - 5, y + 4, 5.5);
+  };
+
   // Página 1 – encabezado
   const logo = await cargarImagen("./logo.jpg");
   doc.addImage(logo, "JPEG", 10, 6, 68, 68 * logo.naturalHeight / logo.naturalWidth);
@@ -232,8 +275,8 @@ async function generarPDF() {
     const col = i % 2, fila = Math.floor(i / 2);
     const x = 10 + col * 62, y = 52 + fila * 24;
     texto(n.nombre.toUpperCase() + ":", x, y, 8.5, true);
-    texto("Nivel", x, y + 7, 8); opciones(x + 11, y + 7, OPC_NIVEL, val(`nivel_${n.id}`));
-    texto("Tapón", x, y + 14, 8); opciones(x + 11, y + 14, OPC_SN, val(`tapon_${n.id}`));
+    texto("Nivel", x, y + 7, 8); barraPDF(x + 11, y + 7, nivelValido(estado.v[`nivel_${n.id}`]));
+    texto("Tapón", x, y + 16.5, 8); opciones(x + 11, y + 16.5, OPC_SN, val(`tapon_${n.id}`));
   });
   // Luces
   caja(134, 48, 66, 74);
@@ -265,13 +308,14 @@ async function generarPDF() {
   const x0 = 10, w0 = 34, wc = 39;
   doc.setFillColor(...AZUL); doc.rect(x0, 182, w0 + wc * 4, 11, "F");
   doc.setTextColor(255); doc.setFont("helvetica", "bold"); doc.setFontSize(7.5);
-  doc.text("POSICIÓN / No.", x0 + 2, 188);
+  doc.text("POSICIÓN /", x0 + 2, 186); doc.text("No. ECONÓMICO", x0 + 2, 190);
   COLS_LLANTA.forEach(([, t], i) => doc.text(t.toUpperCase(), x0 + w0 + wc * i + wc / 2, 186, { align: "center", maxWidth: wc - 2 }));
   doc.setTextColor(0);
   POSICIONES.forEach((p, r) => {
     const y = 193 + r * 9;
     doc.setDrawColor(150); doc.setLineWidth(0.2); doc.rect(x0, y, w0 + wc * 4, 9);
     texto(p === "REFA" ? "REFA:" : p + "-", x0 + 2, y + 6, 9, true);
+    texto(val(`llanta_eco_${p}`), x0 + (p === "REFA" ? 14 : 8), y + 6, 9);
     COLS_LLANTA.forEach(([c], i) => opciones(x0 + w0 + wc * i + 4, y + 6, OPC_SN, val(`llanta_${p}_${c}`)));
   });
   doc.setDrawColor(...AZUL); doc.setLineWidth(0.5); doc.roundedRect(x0, 182, w0 + wc * 4, 74, 2, 2);

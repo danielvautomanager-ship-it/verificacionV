@@ -1,5 +1,5 @@
 // Guarda los archivos de la app para que abra aunque no haya señal.
-const CACHE = "checklist-pmm-v1";
+const CACHE = "checklist-pmm-v2";
 const ARCHIVOS = [
   "./", "./style.css", "./app.js", "./manifest.webmanifest",
   "./vendor/jspdf.umd.min.js", "./logo.jpg",
