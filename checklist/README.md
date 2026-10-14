@@ -20,9 +20,16 @@ python3 -m http.server 8000     # abre http://localhost:8000
 ```
 
 ## Publicarla (necesario para instalarla en Android)
-Android solo instala la app si se abre por **HTTPS**. No necesita servidor: son archivos estáticos.
-La forma más fácil es **GitHub Pages**: en el repositorio, Settings → Pages → publicar desde la rama,
-carpeta `/checklist/static` (o subir esa carpeta a Netlify / Cloudflare Pages).
+Android solo instala la app si se abre por **HTTPS**. Son archivos estáticos, no necesita servidor.
+
+**Opción A – la más rápida (1 minuto, sin cuenta de programador):**
+1. Descarga `checklist/Checklist-PMM-app.zip` y descomprímelo en una carpeta.
+2. Entra a https://app.netlify.com/drop, arrastra la carpeta descomprimida.
+3. Netlify te da una dirección `https://....netlify.app`. Esa es tu app.
+
+**Opción B – GitHub Pages (automática):** al unir (merge) esta rama a la rama principal del repositorio,
+el archivo `.github/workflows/pages.yml` la publica solo. Antes, una sola vez: Settings → Pages →
+Source: **GitHub Actions**.
 
 ## Instalarla en el celular
 1. Abrir la dirección HTTPS en **Chrome**.
