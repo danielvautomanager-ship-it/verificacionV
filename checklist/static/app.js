@@ -23,10 +23,10 @@ const COLS_LLANTA = [["buenas", "Buenas condiciones"], ["golpe", "Golpe en llant
   ["desgastada", "Desgastada"], ["reparacion", "Llanta para reparación"]];
 const POSICIONES = ["1", "2", "3", "4", "5", "6", "REFA"];
 const GOLPES = [
-  { id: "izq", nombre: "Lado izquierdo", img: "/golpe_lado_izq.jpg" },
-  { id: "der", nombre: "Lado derecho", img: "/golpe_lado_der.jpg" },
-  { id: "frente", nombre: "Frente", img: "/golpe_frente.jpg" },
-  { id: "trasera", nombre: "Parte trasera", img: "/golpe_trasera.jpg" },
+  { id: "izq", nombre: "Lado izquierdo", img: "./golpe_lado_izq.jpg" },
+  { id: "der", nombre: "Lado derecho", img: "./golpe_lado_der.jpg" },
+  { id: "frente", nombre: "Frente", img: "./golpe_frente.jpg" },
+  { id: "trasera", nombre: "Parte trasera", img: "./golpe_trasera.jpg" },
 ];
 
 // ───────────── Estado (se guarda solo en el celular) ─────────────
@@ -216,7 +216,7 @@ async function generarPDF() {
   };
 
   // Página 1 – encabezado
-  const logo = await cargarImagen("/logo.jpg");
+  const logo = await cargarImagen("./logo.jpg");
   doc.addImage(logo, "JPEG", 10, 6, 68, 68 * logo.naturalHeight / logo.naturalWidth);
   const campos = [["No. Eco", estado.eco], ["Fecha", fechaMx(estado.fecha)], ["Odómetro", estado.odometro], ["Conductor", estado.conductor]];
   campos.forEach(([n, v], i) => {
@@ -303,7 +303,9 @@ async function generarPDF() {
   return doc;
 }
 
-// ───────────── Envío ─────────────
+// ───────────── Envío por WhatsApp ─────────────
+const WHATSAPP = "523111416176"; // 311 141 6176 (México, +52)
+
 function modal(texto, botones) {
   $("modal-texto").textContent = texto;
   const cont = $("modal-acciones");
@@ -325,15 +327,9 @@ function faltantes() {
   return f;
 }
 
-async function compartirPDF(blob, nombre) {
-  const archivo = new File([blob], nombre, { type: "application/pdf" });
-  if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
-    await navigator.share({ files: [archivo], title: nombre });
-    return true;
-  }
+function descargar(blob, nombre) {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = nombre; a.click();
-  return false;
 }
 
 async function enviar() {
@@ -341,38 +337,34 @@ async function enviar() {
   if (falta.length) { window.scrollTo({ top: 0, behavior: "smooth" }); modal("Falta llenar: " + falta.join(", ") + ".", [["Entendido"]]); return; }
 
   const btn = $("enviar");
-  btn.disabled = true; btn.textContent = "Enviando…";
-  let doc, nombre, blob;
+  btn.disabled = true; btn.textContent = "Preparando PDF…";
   try {
-    doc = await generarPDF();
-    nombre = `Checklist_${estado.eco.trim().replace(/[^\w-]/g, "")}_${estado.fecha}.pdf`;
-    blob = doc.output("blob");
-  } catch (e) {
-    btn.disabled = false; btn.textContent = "Enviar checklist";
-    modal("No se pudo crear el PDF. Intenta de nuevo.", [["Cerrar"]]);
-    return;
-  }
+    const doc = await generarPDF();
+    const nombre = `Checklist_${estado.eco.trim().replace(/[^\w-]/g, "")}_${estado.fecha}.pdf`;
+    const blob = doc.output("blob");
+    const archivo = new File([blob], nombre, { type: "application/pdf" });
+    const texto = `Checklist unidad ${estado.eco.trim()} - ${fechaMx(estado.fecha)} - Conductor: ${estado.conductor.trim()}`;
 
-  try {
-    const base64 = doc.output("datauristring").split(",")[1];
-    const r = await fetch("/enviar", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pdf: base64, eco: estado.eco, fecha: fechaMx(estado.fecha), conductor: estado.conductor }),
-    });
-    const res = await r.json().catch(() => ({}));
-    if (!r.ok || !res.ok) throw new Error(res.error || "Error de envío");
-    modal("Checklist enviado a:\n" + res.destinatarios.join("\n"), [
-      ["Nuevo checklist", () => limpiar(true)],
-      ["Cerrar", null, true],
-    ]);
+    if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+      // Abre el menú de Android: el usuario elige WhatsApp y el contacto.
+      try {
+        await navigator.share({ files: [archivo], text: texto });
+        modal("Listo. Si ya enviaste el PDF por WhatsApp, puedes empezar un checklist nuevo.", [
+          ["Nuevo checklist", () => limpiar(true)], ["Cerrar", null, true]]);
+      } catch (e) {
+        if (e.name !== "AbortError") throw e; // si cancela, no pasa nada
+      }
+    } else {
+      // Plan B: descarga el PDF y abre el chat de WhatsApp para adjuntarlo.
+      descargar(blob, nombre);
+      modal("El PDF se descargó en tu celular. Toca 'Abrir WhatsApp' y adjunta el archivo " + nombre + " (clip → Documento).", [
+        ["Abrir WhatsApp", () => window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(texto)}`, "_blank")],
+        ["Cerrar", null, true]]);
+    }
   } catch (e) {
-    modal("No se pudo enviar por correo (" + e.message + "). Revisa tu conexión a internet. Tus datos siguen guardados.\n\nPuedes compartir el PDF por tu correo o WhatsApp.", [
-      ["Reintentar", enviar],
-      ["Compartir / guardar PDF", () => compartirPDF(blob, nombre).catch(() => {}), true],
-      ["Cerrar", null, true],
-    ]);
+    modal("No se pudo preparar el PDF. Intenta de nuevo.", [["Cerrar"]]);
   } finally {
-    btn.disabled = false; btn.textContent = "Enviar checklist";
+    btn.disabled = false; btn.textContent = "Enviar por WhatsApp";
   }
 }
 
@@ -385,4 +377,4 @@ function limpiar(sinPreguntar) {
 construir();
 $("enviar").addEventListener("click", enviar);
 $("limpiar").addEventListener("click", limpiar);
-if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => {});

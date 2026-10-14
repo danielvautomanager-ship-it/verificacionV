@@ -1,10 +1,10 @@
 // Guarda los archivos de la app para que abra aunque no haya señal.
 const CACHE = "checklist-pmm-v1";
 const ARCHIVOS = [
-  "/", "/style.css", "/app.js", "/manifest.webmanifest",
-  "/vendor/jspdf.umd.min.js", "/logo.jpg",
-  "/golpe_lado_izq.jpg", "/golpe_lado_der.jpg", "/golpe_frente.jpg", "/golpe_trasera.jpg",
-  "/icon-192.png", "/icon-512.png",
+  "./", "./style.css", "./app.js", "./manifest.webmanifest",
+  "./vendor/jspdf.umd.min.js", "./logo.jpg",
+  "./golpe_lado_izq.jpg", "./golpe_lado_der.jpg", "./golpe_frente.jpg", "./golpe_trasera.jpg",
+  "./icon-192.png", "./icon-512.png",
 ];
 
 self.addEventListener("install", (e) => {

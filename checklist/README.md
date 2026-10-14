@@ -1,51 +1,30 @@
 # Checklist PMM (app para Android)
 
 App web instalable (PWA) con el formato "Checklist frente Isuzu y Hino".
-Se llena en el celular, genera un PDF igual al formato y lo envía como **adjunto** a:
-
-- supervisorflotillas@pmm.com.mx
-- flotillas@pmm.com.mx
-- gerenciatpc@pmm.com.mx
-
-## 1. Probar en tu computadora
-
-```bash
-cd checklist
-pip install -r requirements.txt
-python server.py          # abre http://localhost:5000
-```
-
-## 2. Configurar el correo que envía (obligatorio para que mande)
-
-El envío sale desde una cuenta de correo tuya (la "cuenta remitente").
-Con Gmail: activa la verificación en 2 pasos y crea una **contraseña de aplicación**
-(https://myaccount.google.com/apppasswords). Luego define estas variables:
-
-```bash
-export SMTP_USER="tu_cuenta@gmail.com"
-export SMTP_PASSWORD="la_contraseña_de_aplicación"
-# Opcionales (por defecto Gmail): SMTP_HOST=smtp.gmail.com  SMTP_PORT=587  SMTP_FROM
-```
-
-Nunca escribas la contraseña dentro del código ni la subas a GitHub.
-
-## 3. Publicarla en internet (necesario para usarla en Android)
-
-Android solo permite instalar la app si se abre por **HTTPS**. Sube la carpeta `checklist`
-a un hosting que corra Python (Render, Railway, Fly.io, PythonAnywhere, etc.) con:
-
-- Comando de inicio: `gunicorn server:app`
-- Variables de entorno: `SMTP_USER` y `SMTP_PASSWORD`
-
-## 4. Instalarla en el celular Android
-
-1. Abre la dirección HTTPS en **Chrome**.
-2. Menú ⋮ → **Instalar aplicación** (o "Agregar a pantalla principal").
-3. Aparece el ícono "Checklist PMM" como cualquier app.
+Se llena en el celular, genera un PDF igual al formato y lo envía por **WhatsApp** al **311 141 6176**.
 
 ## Cómo se usa
+1. Llenar No. Eco, Fecha, Odómetro y Conductor; marcar niveles, luces, documentos, batería y llantas;
+   tocar el dibujo de la unidad para marcar golpes.
+2. Tocar **Enviar por WhatsApp**.
+3. Android abre el menú de compartir con el PDF adjunto: elegir **WhatsApp** y el contacto 311 141 6176
+   y tocar enviar. (WhatsApp exige que una persona confirme el envío; ninguna app puede mandarlo sola.)
 
-Llenar No. Eco, Fecha, Odómetro y Conductor → marcar niveles, luces, documentos, batería y
-llantas → tocar el dibujo de la unidad para marcar golpes → **Enviar checklist**.
-Si no hay internet, los datos quedan guardados en el celular y se puede reintentar,
-o compartir el PDF por correo/WhatsApp.
+Si el celular no soporta el menú de compartir, la app descarga el PDF y abre el chat de WhatsApp
+con el número ya puesto para adjuntar el archivo.
+
+## Probar en tu computadora
+```bash
+cd checklist/static
+python3 -m http.server 8000     # abre http://localhost:8000
+```
+
+## Publicarla (necesario para instalarla en Android)
+Android solo instala la app si se abre por **HTTPS**. No necesita servidor: son archivos estáticos.
+La forma más fácil es **GitHub Pages**: en el repositorio, Settings → Pages → publicar desde la rama,
+carpeta `/checklist/static` (o subir esa carpeta a Netlify / Cloudflare Pages).
+
+## Instalarla en el celular
+1. Abrir la dirección HTTPS en **Chrome**.
+2. Menú ⋮ → **Instalar aplicación**.
+3. Queda el ícono "Checklist PMM" como cualquier app y abre incluso sin internet.

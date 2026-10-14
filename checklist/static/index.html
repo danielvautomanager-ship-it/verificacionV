@@ -5,15 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#12315f">
   <title>Checklist PMM</title>
-  <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <header class="top">
-    <img src="/logo.jpg" alt="PMM Paquetería + Mensajería" class="logo">
+    <img src="./logo.jpg" alt="PMM Paquetería + Mensajería" class="logo">
     <p class="sub">Checklist frente Isuzu y Hino</p>
+    <p class="hint">Al terminar, el PDF se envía por WhatsApp al 311 141 6176.</p>
   </header>
 
   <main id="form">
@@ -50,7 +51,7 @@
 
   <footer class="bar">
     <button id="limpiar" class="sec" type="button">Limpiar</button>
-    <button id="enviar" class="main" type="button">Enviar checklist</button>
+    <button id="enviar" class="main" type="button">Enviar por WhatsApp</button>
   </footer>
 
   <div id="modal" hidden>
@@ -60,7 +61,7 @@
     </div>
   </div>
 
-  <script src="/vendor/jspdf.umd.min.js"></script>
-  <script src="/app.js"></script>
+  <script src="./vendor/jspdf.umd.min.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
