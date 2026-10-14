@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12315f">
+  <title>Checklist PMM</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <img src="/logo.jpg" alt="PMM Paquetería + Mensajería" class="logo">
+    <p class="sub">Checklist frente Isuzu y Hino</p>
+  </header>
+
+  <main id="form">
+    <section class="card">
+      <div class="grid2">
+        <label>No. Eco <input id="eco" autocomplete="off" required></label>
+        <label>Fecha <input id="fecha" type="date" required></label>
+        <label>Odómetro <input id="odometro" inputmode="numeric" autocomplete="off" required></label>
+        <label>Conductor <input id="conductor" autocomplete="off" required></label>
+      </div>
+    </section>
+
+    <h2>Niveles</h2>
+    <section class="card" id="niveles"></section>
+
+    <h2>Luces <small>¿Funciona?</small></h2>
+    <section class="card" id="luces"></section>
+
+    <h2>Documentos</h2>
+    <section class="card" id="docs"></section>
+
+    <h2>Batería <small>(ubicada en camión)</small></h2>
+    <section class="card" id="bateria"></section>
+
+    <h2>Llantas</h2>
+    <section class="card" id="llantas"></section>
+
+    <h2>Golpes <small>toca la imagen para marcar</small></h2>
+    <section id="golpes"></section>
+
+    <h2>Observaciones generales</h2>
+    <section class="card"><textarea id="obs_general" rows="4"></textarea></section>
+  </main>
+
+  <footer class="bar">
+    <button id="limpiar" class="sec" type="button">Limpiar</button>
+    <button id="enviar" class="main" type="button">Enviar checklist</button>
+  </footer>
+
+  <div id="modal" hidden>
+    <div class="box">
+      <p id="modal-texto"></p>
+      <div id="modal-acciones"></div>
+    </div>
+  </div>
+
+  <script src="/vendor/jspdf.umd.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
