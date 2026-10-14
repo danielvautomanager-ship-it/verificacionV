@@ -129,10 +129,14 @@ function construir() {
     d.className = "nivel-item";
     d.innerHTML = `<div class="nombre"></div>
       <div class="fila"><span class="etq">¿Tiene?</span></div>
-      <div class="fila"><span class="etq">Vigente</span></div>`;
+      <div class="fila"><span class="etq">Vigente</span></div>
+      <div class="fila"><span class="etq">Vigencia</span><input type="date" class="fecha-doc" aria-label="Fecha de vigencia"></div>`;
     d.firstChild.textContent = nombre;
     d.children[1].appendChild(segmento(`${id}_tiene`, OPC_SN));
     d.children[2].appendChild(segmento(`${id}_vigente`, OPC_SN));
+    const fecha = d.querySelector(".fecha-doc");
+    fecha.value = estado.v[`${id}_fecha`] || "";
+    fecha.addEventListener("input", () => { estado.v[`${id}_fecha`] = fecha.value; guardar(); });
     $("docs").appendChild(d);
   }
 
@@ -292,6 +296,9 @@ async function generarPDF() {
   [["tarjeta", "Tarjeta de circulación"], ["poliza", "Póliza de seguros"]].forEach(([id, n], i) => {
     const y = 140 + i * 14;
     texto(n + ":", 13, y, 8.5, true);
+    texto("Vigencia:", 52, y, 8);
+    doc.setDrawColor(60); doc.setLineWidth(0.3); doc.rect(65, y - 4, 34, 5.5);
+    texto(fechaMx(val(`${id}_fecha`)), 67, y, 8.5);
     texto("¿Tiene?", 13, y + 6, 8); opciones(26, y + 6, OPC_SN, val(`${id}_tiene`));
     texto("Vigente", 56, y + 6, 8); opciones(70, y + 6, OPC_SN, val(`${id}_vigente`));
   });

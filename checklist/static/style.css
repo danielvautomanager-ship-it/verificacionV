@@ -116,3 +116,4 @@ textarea { resize: vertical; }
 .tabla-llantas .seg button { min-width: 0; width: 100%; padding: 0; font-size: .8rem; }
 .eco-llanta { width: 100%; padding: 8px 2px; font-size: .9rem; }
 .tabla-llantas td { padding: 6px 1px; }
+.fecha-doc { width: auto; flex: 1; margin: 0; min-height: 44px; }
